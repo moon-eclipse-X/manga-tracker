@@ -366,6 +366,29 @@
             },
 
         ];
+               // 2. Helper function to calculate days ago
+        function daysAgo(dateString) {
+            const days = Math.floor((new Date() - new Date(dateString)) / (1000 * 60 * 60 * 24));
+            return days === 0 ? "Today" : days + " days ago";
+        }
+
+        // Load saved favorites from the visitor's browser
+        let savedFavorites = JSON.parse(localStorage.getItem("mangaFavorites")) || [];
+
+        // Toggle favorite status when clicking the star button
+        function toggleFavorite(mangaId, buttonElement) {
+            if (savedFavorites.includes(mangaId)) {
+                savedFavorites = savedFavorites.filter(id => id !== mangaId);
+                buttonElement.classList.remove("is-fav");
+                buttonElement.innerText = "☆";
+            } else {
+                savedFavorites.push(mangaId);
+                buttonElement.classList.add("is-fav");
+                buttonElement.innerText = "★";
+            }
+            localStorage.setItem("mangaFavorites", JSON.stringify(savedFavorites));
+            filterCards();
+        }
 
                // Helper to format AniList official publication info accurately
         function formatOfficialInfo(info) {
