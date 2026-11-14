@@ -27,7 +27,6 @@
     <footer class="container">
         <small>Data powered by AniList & MangaDex API.</small>
     </footer>
-
 <script>
     // 1. Unique IDs for World Trigger
     const anilistId = 78151;
@@ -59,18 +58,26 @@
 
     // 4. Fetch latest chapter from MangaDex API
     async function getLatestChapter(language, elementId) {
-        const baseUrl = "https://" + "api.mangadex.org/manga/";
-        const params = `/feed?translatedLanguage[]=${language}&order[chapter]=desc&limit=1`;
-        
-        const response = await fetch(baseUrl + mangadexId + params);
-        const data = await response.json();
+        try {
+            const baseUrl = "https://" + "api.mangadex.org/manga/";
+            const params = `/feed?translatedLanguage[]=${language}&order[chapter]=desc&limit=1`;
+            
+            const response = await fetch(baseUrl + mangadexId + params);
+            const data = await response.json();
 
-        if (data.data && data.data.length > 0) {
-            const chapter = data.data[0].attributes.chapter;
-            const date = data.data[0].attributes.publishAt;
-            document.getElementById(elementId).innerText = `Chapter ${chapter} (${daysAgo(date)})`;
-        } else {
-            document.getElementById(elementId).innerText = "No chapter data found";
+            if (data.data && data.data.length > 0) {
+                // Added [0] to grab the first item in the list
+                const latest = data.data[0].attributes;
+                const chapter = latest.chapter;
+                const date = latest.publishAt;
+                document.getElementById(elementId).innerText = `Chapter ${chapter} (${daysAgo(date)})`;
+            } else {
+                document.getElementById(elementId).innerText = "No chapter data found";
+            }
+        } catch (error) {
+            // Shows an error message instead of getting stuck on Loading
+            document.getElementById(elementId).innerText = "Error loading data";
+            console.error(error);
         }
     }
 
