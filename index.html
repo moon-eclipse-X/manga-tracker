@@ -56,11 +56,16 @@
             return days === 0 ? "Today" : days + " days ago";
         }
 
-        // 3. Build the HTML cards and fetch live API data for every manga in the list
+               // 3. Build the HTML cards and fetch live API data for every manga in the list
         async function initTracker() {
             const container = document.getElementById("manga-container");
 
+            // Automatically sort the manga list alphabetically (A-Z) by title
+            mangaList.sort((a, b) => a.title.localeCompare(b.title));
+
             for (const manga of mangaList) {
+                // ... de rest van je code blijft precies hetzelfde!
+
                 // Create an <article> card for this manga
                 const card = document.createElement("article");
                 card.className = "manga-card";
