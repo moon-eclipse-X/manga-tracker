@@ -1095,7 +1095,7 @@
                 const starIcon = isFav ? "★" : "☆";
                 const favClass = isFav ? "fav-btn is-fav" : "fav-btn";
                 const userCh = savedProgress[manga.id] || 0;
-                const noteHtml = manga.note ? `<p class="custom-note">📝 ${manga.note}</p>` : "";
+                const noteHtml = manga.note ? `<p class="custom-note">${manga.note}</p>` : "";
                 const anilistLink = "https://" + "anilist.co/manga/" + manga.anilistId;
                 const mpBase = "https://" + "mangaplus.shueisha.co.jp/search_result?keyword=";
                 const officialReadLink = manga.readUrl || (mpBase + encodeURIComponent(manga.title));
@@ -1109,14 +1109,16 @@
                         <p>Status: <span id="${manga.id}-status">Loading...</span></p>
                         <p>Latest Chapter: <span id="${manga.id}-latest">Loading...</span></p>
                         ${noteHtml}
-                        <div class="progress-box">
-                            <span>My Progress: <strong>Ch. <span id="${manga.id}-progress">${userCh}</span></strong></span>
+                                               <div class="progress-box">
+                            <div class="progress-input-group">
+                                <span>Ch.</span>
+                                <input type="number" id="${manga.id}-progress" class="progress-input" value="${userCh}" min="0" onchange="setProgress('${manga.id}', this.value)" aria-label="Current chapter">
+                            </div>
                             <div class="progress-controls">
                                 <button class="step-btn outline secondary" onclick="updateProgress('${manga.id}', -1)" title="Decrease chapter">-</button>
                                 <button class="step-btn" onclick="updateProgress('${manga.id}', 1)" title="Next chapter">+1</button>
                             </div>
                         </div>
-                    </div>
                     <div class="card-links">
                         <a href="${anilistLink}" target="_blank">AniList</a>
                         <a href="${officialReadLink}" target="_blank" class="read-link">Read Official ↗</a>
@@ -1173,12 +1175,13 @@
                 // Show AniList info immediately so cards never stay on "Loading..."
                 document.getElementById(`${manga.id}-latest`).innerText = formatOfficialInfo(info);
 
-                // Queue Jikan (MyAnimeList) every 400ms to stay safely under 3 requests/sec
+                           // Queue Jikan (MyAnimeList) every 400ms to stay safely under 3 requests/sec
                 setTimeout(() => {
                     checkMyAnimeList(manga.title, `${manga.id}-latest`, info);
                 }, delay);
                 delay += 400;
             }
+            filterCards();
         }
 
         // 4. Fetch exact chapter & volume counts from Jikan (MyAnimeList API - No proxy needed!)
