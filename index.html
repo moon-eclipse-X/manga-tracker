@@ -28,7 +28,7 @@
         </small>
     </footer>
 
-    <script>
+        <script>
         // 1. YOUR MANGA LIST (Add as many series here as you want!)
         const mangaList = [
             {
@@ -56,7 +56,7 @@
             return days === 0 ? "Today" : days + " days ago";
         }
 
-               // 3. Build the HTML cards and fetch live API data for every manga in the list
+        // 3. Build the HTML cards and fetch live API data for every manga in the list
         async function initTracker() {
             const container = document.getElementById("manga-container");
 
@@ -64,8 +64,6 @@
             mangaList.sort((a, b) => a.title.localeCompare(b.title));
 
             for (const manga of mangaList) {
-                // ... de rest van je code blijft precies hetzelfde!
-
                 // Create an <article> card for this manga
                 const card = document.createElement("article");
                 card.className = "manga-card";
@@ -100,7 +98,10 @@
             const alData = await alResponse.json();
             const info = alData.data.Media;
 
-            document.getElementById(`${manga.id}-status`).innerText = info.status;
+            // Add badge styling and color based on status
+            const statusBadge = document.getElementById(`${manga.id}-status`);
+            statusBadge.innerText = info.status;
+            statusBadge.className = "status-badge status-" + info.status.toLowerCase();
 
             await checkMangaDex(manga.mangadexId, "ja", `${manga.id}-jp`, info);
             await checkMangaDex(manga.mangadexId, "en", `${manga.id}-en`, info);
