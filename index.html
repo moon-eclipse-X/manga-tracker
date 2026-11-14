@@ -20,12 +20,12 @@
     <main class="container">
         <!-- Search bar to filter manga live -->
         <input type="search" id="search-input" placeholder="Search manga by title...">
-        <!-- Filter buttons -->
+                <!-- Filter buttons -->
         <div class="filter-buttons">
             <button class="filter-btn active" data-filter="all">All</button>
             <button class="filter-btn" data-filter="favorites">⭐ Favorites</button>
             <button class="filter-btn" data-filter="releasing">Releasing</button>
-            <button class="filter-btn" data-filter="hiatus">On Hiatus</button>
+            <button class="filter-btn" data-filter="hiatus">🚨 Hiatus Radar</button>
             <button class="filter-btn" data-filter="finished">Finished</button>
         </div>
 
@@ -1064,11 +1064,14 @@
                 card.setAttribute("data-id", manga.id);
                 card.setAttribute("data-title", manga.title.toLowerCase());
 
-                const isFav = savedFavorites.includes(manga.id);
+                               const isFav = savedFavorites.includes(manga.id);
                 const starIcon = isFav ? "★" : "☆";
                 const favClass = isFav ? "fav-btn is-fav" : "fav-btn";
+                const userCh = savedProgress[manga.id] || 0;
                 const noteHtml = manga.note ? `<p class="custom-note">📝 ${manga.note}</p>` : "";
                 const anilistLink = "https://" + "anilist.co/manga/" + manga.anilistId;
+                // Use custom readUrl if provided, otherwise search official MANGA Plus automatically
+                const officialReadLink = manga.readUrl || `https://shueisha.co.jp{encodeURIComponent(manga.title)}`;
 
                 card.innerHTML = `
                     <div>
@@ -1079,8 +1082,18 @@
                         <p>Status: <span id="${manga.id}-status">Loading...</span></p>
                         <p>Latest Chapter: <span id="${manga.id}-latest">Loading...</span></p>
                         ${noteHtml}
+                        <div class="progress-box">
+                            <span>My Progress: <strong>Ch. <span id="${manga.id}-progress">${userCh}</span></strong></span>
+                            <div class="progress-controls">
+                                <button class="step-btn outline secondary" onclick="updateProgress('${manga.id}', -1)" title="Decrease chapter">-</button>
+                                <button class="step-btn" onclick="updateProgress('${manga.id}', 1)" title="Next chapter">+1</button>
+                            </div>
+                        </div>
                     </div>
-                    <a href="${anilistLink}" target="_blank">View on AniList</a>
+                    <div class="card-links">
+                        <a href="${anilistLink}" target="_blank">AniList</a>
+                        <a href="${officialReadLink}" target="_blank" class="read-link">Read Official ↗</a>
+                    </div>
                 `;
                 container.appendChild(card);
             }

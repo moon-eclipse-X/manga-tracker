@@ -156,3 +156,51 @@ button.fav-btn.is-fav {
     color: var(--pico-muted-color);
     margin-bottom: 1rem;
 }
+
+/* Personal chapter progress tracker (- / + buttons) */
+.progress-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 0.75rem;
+    padding: 0.4rem 0.6rem;
+    background-color: rgba(255, 255, 255, 0.04);
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.progress-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+button.step-btn {
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 4px;
+}
+
+/* Bottom card links (AniList + Read Official) */
+.card-links {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--pico-muted-border-color);
+    font-size: 0.9rem;
+}
+
+.read-link {
+    font-weight: 600;
+    color: #2ecc71;
+}
