@@ -25,6 +25,21 @@
             <button class="filter-btn" data-filter="hiatus">On Hiatus</button>
             <button class="filter-btn" data-filter="finished">Finished</button>
         </div>
+                <!-- Genre filter dropdown -->
+        <select id="genre-filter">
+            <option value="all">All Genres</option>
+            <option value="action">Action</option>
+            <option value="adventure">Adventure</option>
+            <option value="comedy">Comedy</option>
+            <option value="drama">Drama</option>
+            <option value="fantasy">Fantasy</option>
+            <option value="mystery">Mystery</option>
+            <option value="romance">Romance</option>
+            <option value="sci-fi">Sci-Fi</option>
+            <option value="sports">Sports</option>
+            <option value="supernatural">Supernatural</option>
+        </select>
+
 
         <!-- JavaScript will automatically place all manga cards inside this div -->
         <div id="manga-container"></div>
@@ -36,9 +51,9 @@
             AniList database update instead of an exact chapter date.
         </small>
     </footer>
-
     <script>
-        // 1. YOUR MANGA LIST (Add as many series here as you want!)
+        // 1. YOUR MANGA LIST
+        // 1. YOUR MANGA LIST (Automatically sorted A-Z by initTracker)
         const mangaList = [
             {
                 id: "wt",
@@ -51,10 +66,226 @@
                 title: "Moriarty the Patriot",
                 anilistId: 98544,
                 mangadexId: "1d9fad4e-b81a-4498-8cce-e5ddfb1e4f03"
-            }
+            },
+            {
+                id: "sxf",
+                title: "Spy x Family",
+                anilistId: 108556,
+                mangadexId: "6b958848-c885-4735-9201-12ee77abcb3c"
+            },
+            {
+                id: "hxh",
+                title: "Hunter x Hunter",
+                anilistId: 30026,
+                mangadexId: "db692d58-4b13-4174-ae8c-30c515c0689c"
+            },
+            {
+                id: "frieren",
+                title: "Frieren: Beyond Journey's End",
+                anilistId: 118586,
+                mangadexId: "b0b721ff-c388-4486-aa0f-c2b0bb321512"
+            },
+            {
+                id: "berserk",
+                title: "Berserk",
+                anilistId: 30002,
+                mangadexId: "801513ba-a712-498c-8f57-cae55b38cc92"
+            },
+            {
+                id: "onepiece",
+                title: "One Piece",
+                anilistId: 30013,
+                mangadexId: ""
+            },
+            {
+                id: "jjk",
+                title: "Jujutsu Kaisen",
+                anilistId: 101517,
+                mangadexId: ""
+            },
+            {
+                id: "aot",
+                title: "Attack on Titan",
+                anilistId: 53390,
+                mangadexId: "304ceac3-8cdb-4fe7-acf7-2b6ff7a60613"
+            },
+            {
+                id: "cote",
+                title: "Classroom of the Elite",
+                anilistId: 94970,
+                mangadexId: ""
+            },
+            {
+                id: "assclass",
+                title: "Assassination Classroom",
+                anilistId: 69883,
+                mangadexId: ""
+            },
+            {
+                id: "csm",
+                title: "Chainsaw Man",
+                anilistId: 105778,
+                mangadexId: ""
+            },
+            {
+                id: "vagabond",
+                title: "Vagabond",
+                anilistId: 30656,
+                mangadexId: ""
+            },
+            {
+                id: "nana",
+                title: "Nana",
+                anilistId: 30028,
+                mangadexId: ""
+            },
+            {
+                id: "vinland",
+                title: "Vinland Saga",
+                anilistId: 30642,
+                mangadexId: ""
+            },
+            {
+                id: "mha",
+                title: "My Hero Academia",
+                anilistId: 85486,
+                mangadexId: ""
+            },
+                        {
+                id: "dandadan",
+                title: "Dandadan",
+                anilistId: 132029,
+                mangadexId: "68112dc1-2b80-4f20-beb8-2f2a8716a430"
+            },
+            {
+                id: "sakamoto",
+                title: "Sakamoto Days",
+                anilistId: 125828,
+                mangadexId: "58bc83a0-1808-484e-88b9-17e167469e23"
+            },
+            {
+                id: "kagurabachi",
+                title: "Kagurabachi",
+                anilistId: 169355,
+                mangadexId: "242b3119-0687-422c-9881-f3f1d7c49449"
+            },
+            {
+                id: "kaiju8",
+                title: "Kaiju No. 8",
+                anilistId: 120760,
+                mangadexId: "71763dfb-8b85-4a74-92df-dfe46478fc5d"
+            },
+            {
+                id: "oshi",
+                title: "Oshi no Ko",
+                anilistId: 117195,
+                mangadexId: "296cbc31-af1a-4b5b-a34b-fee2b4cad542"
+            },
+            {
+                id: "tokyo-rev",
+                title: "Tokyo Revengers",
+                anilistId: 102988,
+                mangadexId: "592b6689-3f4a-4e2b-94f2-5591321c9082"
+            },
+            {
+                id: "demon-slayer",
+                title: "Demon Slayer: Kimetsu no Yaiba",
+                anilistId: 87216,
+                mangadexId: "62040a44-0935-46b7-a691-5ae5833af0ae"
+            },
+            {
+                id: "black-clover",
+                title: "Black Clover",
+                anilistId: 86123,
+                mangadexId: "e7e7a8c5-204a-45e4-9829-145f853b3110"
+            },
+            {
+                id: "dgrayman",
+                title: "D.Gray-man",
+                anilistId: 30024,
+                mangadexId: "249f3069-f474-41d5-b5a5-648a105a333b"
+            },
+            {
+                id: "made-in-abyss",
+                title: "Made in Abyss",
+                anilistId: 86551,
+                mangadexId: "80422e14-b9ad-4fda-970f-de370d5fa4e5"
+            },
+                        {
+                id: "solo-leveling",
+                title: "Solo Leveling",
+                anilistId: 105398,
+                mangadexId: "32d76d19-8a05-4db0-9fc2-e0b0648fe9d0"
+            },
+            {
+                id: "omniscient-reader",
+                title: "Omniscient Reader's Viewpoint",
+                anilistId: 119257,
+                mangadexId: "12316b02-406d-4b33-9482-84221208b1e2"
+            },
+            {
+                id: "tbate",
+                title: "The Beginning After the End",
+                anilistId: 108456,
+                mangadexId: ""
+            },
+            {
+                id: "kaguya-sama",
+                title: "Kaguya-sama: Love Is War",
+                anilistId: 86635,
+                mangadexId: "37f5cce0-8070-4ada-96e5-fa24b1bd4ff9"
+            },
+            {
+                id: "horimiya",
+                title: "Horimiya",
+                anilistId: 72451,
+                mangadexId: "a25e46ec-30f7-4db6-89df-cacbc1d9a900"
+            },
+            {
+                id: "fruits-basket",
+                title: "Fruits Basket",
+                anilistId: 30102,
+                mangadexId: ""
+            },
+            {
+                id: "blue-box",
+                title: "Blue Box",
+                anilistId: 132182,
+                mangadexId: ""
+            },
+            {
+                id: "apothecary",
+                title: "The Apothecary Diaries",
+                anilistId: 99022,
+                mangadexId: "e18fe8c6-f6dc-4f05-8462-7b2083ff9a6c"
+            },
+            {
+                id: "blue-lock",
+                title: "Blue Lock",
+                anilistId: 106130,
+                mangadexId: "4141c5dc-c525-4df5-afd7-cc7d192a832f"
+            },
+            {
+                id: "haikyuu",
+                title: "Haikyuu!!",
+                anilistId: 65243,
+                mangadexId: ""
+            },
+            {
+                id: "monster",
+                title: "Monster",
+                anilistId: 30001,
+                mangadexId: "d9e30523-9d65-469e-92a2-30266468674b"
+            },
+            {
+                id: "one-punch-man",
+                title: "One-Punch Man",
+                anilistId: 74347,
+                mangadexId: "d8a959f7-648e-4c8d-8f23-f1f3f8e129f3"
+            },
         ];
 
-        // 2. Helper functions to calculate days ago
+            // 2. Helper functions to calculate days ago
         function daysAgo(dateString) {
             const days = Math.floor((new Date() - new Date(dateString)) / (1000 * 60 * 60 * 24));
             return days === 0 ? "Today" : days + " days ago";
@@ -65,15 +296,16 @@
             return days === 0 ? "Today" : days + " days ago";
         }
 
-        // 3. Build the HTML cards and fetch live API data for every manga in the list
+        // 3. Build HTML cards and fetch ALL AniList data in 1 single batch request
         async function initTracker() {
             const container = document.getElementById("manga-container");
+            if (!container) return;
 
-            // Automatically sort the manga list alphabetically (A-Z) by title
+            // Sort alphabetically (A-Z)
             mangaList.sort((a, b) => a.title.localeCompare(b.title));
 
+            // Create all cards first
             for (const manga of mangaList) {
-                // Create an <article> card for this manga
                 const card = document.createElement("article");
                 card.className = "manga-card";
                 card.setAttribute("data-title", manga.title.toLowerCase());
@@ -88,37 +320,62 @@
                     <a href="${anilistLink}" target="_blank">View on AniList</a>
                 `;
                 container.appendChild(card);
-
-                // Fetch live data for this specific card
-                loadMangaData(manga);
             }
-        }
 
-        // 4. Fetch AniList status + MangaDex chapters for one manga
-        async function loadMangaData(manga) {
+            // Collect all AniList IDs into one list
+            const allIds = mangaList.map(m => m.anilistId);
+
+            // Fetch all manga info in ONE API call (prevents rate limits!)
             const anilistUrl = "https://" + "graphql.anilist.co";
-            const query = `query { Media(id: ${manga.anilistId}, type: MANGA) { status chapters updatedAt } }`;
+            const query = `
+                query ($ids: [Int]) {
+                    Page(perPage: 50) {
+                        media(id_in: $ids, type: MANGA) {
+                            id
+                            status
+                            chapters
+                            updatedAt
+                            genres
+                        }
+                    }
+                }
+            `;
 
             const alResponse = await fetch(anilistUrl, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ query: query })
+                body: JSON.stringify({ query: query, variables: { ids: allIds } })
             });
             const alData = await alResponse.json();
-            const info = alData.data.Media;
+            const mediaResults = alData.data.Page.media;
 
-            // Add badge styling and color based on status
-            const statusBadge = document.getElementById(`${manga.id}-status`);
-            statusBadge.innerText = info.status;
-            statusBadge.className = "status-badge status-" + info.status.toLowerCase();
-            // Save the status on the card so filter buttons can find it
-            statusBadge.closest(".manga-card").setAttribute("data-status", info.status.toLowerCase());
+            // Match each AniList result back to its card and check MangaDex
+            for (const manga of mangaList) {
+                const info = mediaResults.find(item => item.id === manga.anilistId);
+                if (!info) continue;
 
-            await checkMangaDex(manga.mangadexId, "ja", `${manga.id}-jp`, info);
-            await checkMangaDex(manga.mangadexId, "en", `${manga.id}-en`, info);
+                const statusBadge = document.getElementById(`${manga.id}-status`);
+                statusBadge.innerText = info.status;
+                statusBadge.className = "status-badge status-" + info.status.toLowerCase();
+
+                const card = statusBadge.closest(".manga-card");
+                card.setAttribute("data-status", info.status.toLowerCase());
+                card.setAttribute("data-genres", info.genres.join(",").toLowerCase());
+
+                // Only call MangaDex if an ID is provided
+                if (manga.mangadexId) {
+                    checkMangaDex(manga.mangadexId, "ja", `${manga.id}-jp`, info);
+                    checkMangaDex(manga.mangadexId, "en", `${manga.id}-en`, info);
+                } else {
+                    const totalCh = info.chapters ? `Total: ${info.chapters} ch. — ` : "";
+                    const fallbackText = `${totalCh}Official release (AniList info updated ${daysAgoTimestamp(info.updatedAt)})`;
+                    document.getElementById(`${manga.id}-jp`).innerText = fallbackText;
+                    document.getElementById(`${manga.id}-en`).innerText = fallbackText;
+                }
+            }
         }
 
-        // 5. Check MangaDex or use AniList fallback
+        // 4. Check MangaDex or use AniList fallback
         async function checkMangaDex(mangadexId, language, elementId, anilistBackup) {
             try {
                 const proxy = "https://" + "corsproxy.io/?";
@@ -139,8 +396,9 @@
             }
         }
 
-             // 6. Combined live search + status filter buttons
+        // 5. Combined live search + status filter + genre filter
         let currentFilter = "all";
+        let currentGenre = "all";
         let currentSearch = "";
 
         function filterCards() {
@@ -149,24 +407,28 @@
             cards.forEach(card => {
                 const title = card.getAttribute("data-title");
                 const status = card.getAttribute("data-status") || "";
+                const genres = card.getAttribute("data-genres") || "";
 
                 const matchesSearch = title.includes(currentSearch);
                 const matchesFilter = currentFilter === "all" || status === currentFilter;
+                const matchesGenre = currentGenre === "all" || genres.includes(currentGenre);
 
-                card.style.display = (matchesSearch && matchesFilter) ? "flex" : "none";
+                card.style.display = (matchesSearch && matchesFilter && matchesGenre) ? "flex" : "none";
             });
         }
 
-        // Listen to search input
         document.getElementById("search-input").addEventListener("input", function(event) {
             currentSearch = event.target.value.toLowerCase();
             filterCards();
         });
 
-        // Listen to filter button clicks
+        document.getElementById("genre-filter").addEventListener("change", function(event) {
+            currentGenre = event.target.value;
+            filterCards();
+        });
+
         document.querySelectorAll(".filter-btn").forEach(button => {
             button.addEventListener("click", function() {
-                // Move the 'active' class to the clicked button
                 document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
                 this.classList.add("active");
 
@@ -174,11 +436,13 @@
                 filterCards();
             });
         });
+
+        // Start the app!
+        initTracker();
     </script>
-    <script>
-  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-</script>
-<script defer src="/_vercel/insights/script.js"></script>
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
 </body>
 
 </html>
