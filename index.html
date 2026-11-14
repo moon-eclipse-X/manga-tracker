@@ -1124,8 +1124,10 @@
                         <a href="${officialReadLink}" target="_blank" class="read-link">Read Official ↗</a>
                     </div>
                 `;
-                container.appendChild(card);
+                               container.appendChild(card);
             }
+            // Update the counter immediately as soon as all 143 cards are created!
+            filterCards();
 
             // Fetch AniList data in batches of 50 (supports unlimited manga!)
             const anilistUrl = "https://" + "graphql.anilist.co";
