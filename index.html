@@ -434,7 +434,7 @@
                             <button class="${favClass}" onclick="toggleFavorite('${manga.id}', this)" title="Save to favorites">${starIcon}</button>
                         </div>
                         <p>Status: <span id="${manga.id}-status">Loading...</span></p>
-                                                <p>📖 Latest Chapter: <span id="${manga.id}-latest">Loading...</span></p>
+                                                <p>Latest Chapter: <span id="${manga.id}-latest">Loading...</span></p>
                         ${noteHtml}
                     </div>
                     <a href="${anilistLink}" target="_blank">View on AniList</a>
@@ -471,8 +471,7 @@
                 const alData = await alResponse.json();
                 mediaResults = mediaResults.concat(alData.data.Page.media);
             }
-
-            // Match each AniList result back to its card and check MangaDex
+            // Match each AniList result back to its card and check MangaUpdates
             for (const manga of mangaList) {
                 const info = mediaResults.find(item => item.id === manga.anilistId);
                 if (!info) continue;
@@ -484,29 +483,21 @@
                 const card = statusBadge.closest(".manga-card");
                 card.setAttribute("data-status", info.status.toLowerCase());
                 card.setAttribute("data-genres", info.genres.join(",").toLowerCase());
+
                 // Fetch exact latest chapter and release date from MangaUpdates
                 checkMangaUpdates(manga.title, `${manga.id}-latest`, info);
             }
         }
 
-        // 4. Fetch exact latest chapter & release date from MangaUpdates API (No proxy needed!)
+        // 4. Fetch exact latest chapter & release date via your own Vercel API route
         async function checkMangaUpdates(mangaTitle, elementId, anilistBackup) {
             try {
-                const apiUrl = "https://" + "api.mangaupdates.com" + "/v1/series/search";
-                const response = await fetch(apiUrl, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        search: mangaTitle,
-                        perpage: 1
-                    })
-                });
+                const response = await fetch(`/api/manga-updates?title=${encodeURIComponent(mangaTitle)}`);
                 const data = await response.json();
 
                 if (data.results && data.results.length > 0) {
                     const record = data.results[0].record;
                     const latestCh = record.latest_chapter;
-                    // Convert Unix timestamp from MangaUpdates to days ago
                     const days = Math.floor((new Date() - new Date(record.last_updated.timestamp * 1000)) / (1000 * 60 * 60 * 24));
                     const timeAgo = days === 0 ? "Today" : days + " days ago";
 
@@ -515,13 +506,12 @@
                         return;
                     }
                 }
-                // Fallback to AniList publication dates if no chapter number is listed
                 document.getElementById(elementId).innerText = formatOfficialInfo(anilistBackup);
             } catch (error) {
                 document.getElementById(elementId).innerText = formatOfficialInfo(anilistBackup);
             }
         }
-
+      
         // 5. Combined live search + status/favorites filter + genre filter
         let currentFilter = "all";
         let currentGenre = "all";
@@ -583,7 +573,6 @@
             });
         });
 
-        // Start the app!
         // Start the app!
         initTracker();
         filterCards();
