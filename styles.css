@@ -204,3 +204,19 @@ button.step-btn {
     font-weight: 600;
     color: #2ecc71;
 }
+
+.progress-input-group {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-weight: 600;
+}
+
+input.progress-input {
+    width: 4.5rem;
+    height: 1.85rem;
+    padding: 0.15rem 0.4rem;
+    margin: 0;
+    font-size: 0.9rem;
+    text-align: center;
+}

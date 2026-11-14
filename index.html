@@ -20,14 +20,16 @@
     <main class="container">
         <!-- Search bar to filter manga live -->
         <input type="search" id="search-input" placeholder="Search manga by title...">
-                <!-- Filter buttons -->
-        <div class="filter-buttons">
+        <!-- Filter buttons -->
+                   <div class="filter-buttons">
             <button class="filter-btn active" data-filter="all">All</button>
-            <button class="filter-btn" data-filter="favorites">⭐ Favorites</button>
+            <button class="filter-btn" data-filter="favorites">Favorites</button>
+            <button class="filter-btn" data-filter="reading">Reading</button>
             <button class="filter-btn" data-filter="releasing">Releasing</button>
-            <button class="filter-btn" data-filter="hiatus">🚨 Hiatus Radar</button>
+            <button class="filter-btn" data-filter="hiatus">Hiatus Radar</button>
             <button class="filter-btn" data-filter="finished">Finished</button>
         </div>
+
 
         <!-- Genre filter dropdown -->
         <select id="genre-filter">
@@ -224,7 +226,7 @@
                 anilistId: 105398,
                 mangadexId: "32d76d19-8a05-4db0-9fc2-e0b0648fe9d0"
             },
-                        {
+            {
                 id: "yu-yu-hakusho",
                 title: "Yu Yu Hakusho",
                 anilistId: 30053,
@@ -297,7 +299,7 @@
                 anilistId: 39711,
                 mangadexId: ""
             },
-                        {
+            {
                 id: "yu-yu-hakusho",
                 title: "Yu Yu Hakusho",
                 anilistId: 30053,
@@ -370,7 +372,7 @@
                 anilistId: 39711,
                 mangadexId: ""
             },
-                        {
+            {
                 id: "hajime-no-ippo-alt-or-ashitas-joe",
                 title: "Ashita no Joe",
                 anilistId: 31303,
@@ -454,7 +456,7 @@
                 anilistId: 86635,
                 mangadexId: "37f5cce0-8070-4ada-96e5-fa24b1bd4ff9"
             },
-                        {
+            {
                 id: "pluto",
                 title: "Pluto",
                 anilistId: 30745,
@@ -520,7 +522,7 @@
                 anilistId: 86265,
                 mangadexId: ""
             },
-                        {
+            {
                 id: "kakegurui",
                 title: "Kakegurui",
                 anilistId: 85793,
@@ -640,7 +642,7 @@
                 anilistId: 30001,
                 mangadexId: "d9e30523-9d65-469e-92a2-30266468674b"
             },
-                        {
+            {
                 id: "jojo-part-1",
                 title: "JoJo's Bizarre Adventure Part 1: Phantom Blood",
                 anilistId: 31517,
@@ -1041,20 +1043,29 @@
             return `${chText}Official release`;
         }
 
-              // 3. Build HTML cards and fetch ALL AniList data in batches of 50
-                      // Load saved favorites from the visitor's browser
+        // 3. Build HTML cards and fetch ALL AniList data in batches of 50
+        // Load saved favorites from the visitor's browser
 
-            // Load personal reading progress from browser storage
+        // Load personal reading progress from browser storage
         let savedProgress = JSON.parse(localStorage.getItem("mangaProgress")) || {};
 
-        // Update chapter progress (+1 or -1) without needing an account
+             // Update chapter progress (+1 or -1) without needing an account
         function updateProgress(mangaId, change) {
             const current = savedProgress[mangaId] || 0;
             const next = Math.max(0, current + change);
             savedProgress[mangaId] = next;
 
             localStorage.setItem("mangaProgress", JSON.stringify(savedProgress));
-            document.getElementById(`${mangaId}-progress`).innerText = next;
+            document.getElementById(`${mangaId}-progress`).value = next;
+            filterCards();
+        }
+
+        // Save typed chapter number directly
+        function setProgress(mangaId, value) {
+            const num = Math.max(0, parseInt(value) || 0);
+            savedProgress[mangaId] = num;
+            localStorage.setItem("mangaProgress", JSON.stringify(savedProgress));
+            filterCards();
         }
 
         // 3. Build HTML cards and fetch ALL AniList data in batches of 50
@@ -1140,7 +1151,7 @@
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ query: query, variables: { ids: batchIds } })
                 });
-                                          const alData = await alResponse.json();
+                const alData = await alResponse.json();
                 mediaResults = mediaResults.concat(alData.data.Page.media);
             }
 
@@ -1224,24 +1235,25 @@
                 const genres = card.getAttribute("data-genres") || "";
 
                 const matchesSearch = title.includes(currentSearch);
-                const matchesGenre = currentGenre === "all" || genres.includes(currentGenre);
+                               const matchesGenre = currentGenre === "all" || genres.includes(currentGenre);
 
                 let matchesFilter = true;
                 if (currentFilter === "favorites") {
                     matchesFilter = savedFavorites.includes(id);
+                } else if (currentFilter === "reading") {
+                    matchesFilter = (savedProgress[id] || 0) > 0;
                 } else if (currentFilter !== "all") {
                     matchesFilter = status === currentFilter;
                 }
 
                 if (matchesSearch && matchesFilter && matchesGenre) {
-                    card.style.display = "flex";
-                    visibleCount++;
+
                 } else {
                     card.style.display = "none";
                 }
             });
 
-                       // Update the lightweight counter text
+            // Update the lightweight counter text
             const countElement = document.getElementById("results-count");
             if (countElement) {
                 countElement.innerText = `Showing ${visibleCount} of ${cards.length} manga`;
@@ -1268,7 +1280,7 @@
                 filterCards();
             });
         });
-        
+
         // Start the app!
         initTracker();
         filterCards();
