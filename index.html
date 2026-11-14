@@ -290,6 +290,81 @@
                 anilistId: 74347,
                 mangadexId: "d8a959f7-648e-4c8d-8f23-f1f3f8e129f3"
             },
+                        {
+                id: "land-of-the-lustrous",
+                title: "Land of the Lustrous",
+                anilistId: 74489,
+                mangadexId: "cade38b7-64c4-4a29-8e3c-8c283291d6c6"
+            },
+            {
+                id: "noragami",
+                title: "Noragami: Stray God",
+                anilistId: 54692,
+                mangadexId: "68635a08-9e4e-4187-b15f-841c094d546d"
+            },
+            {
+                id: "bungo-stray-dogs",
+                title: "Bungo Stray Dogs",
+                anilistId: 85307,
+                mangadexId: "39c579e1-d890-4a89-b779-2f3e8f179a0a"
+            },
+            {
+                id: "seraph-of-the-end",
+                title: "Seraph of the End",
+                anilistId: 69929,
+                mangadexId: "b5c627b7-a3b5-4a29-88aa-840b6f2b386a"
+            },
+            {
+                id: "skip-and-loafer",
+                title: "Skip and Loafer",
+                anilistId: 109285,
+                mangadexId: "244c9d4f-e0fb-4a90-b517-4d4a5d60f47b"
+            },
+            {
+                id: "witch-hat-atelier",
+                title: "Witch Hat Atelier",
+                anilistId: 98263,
+                mangadexId: "67e7453b-9ee5-4ae5-9316-215b03e4a71d"
+            },
+            {
+                id: "dungeon-meshi",
+                title: "Delicious in Dungeon",
+                anilistId: 86082,
+                mangadexId: "d90ea6cb-7bc3-4d80-8af0-28557e6c4e17"
+            },
+            {
+                id: "gachiakuta",
+                title: "Gachiakuta",
+                anilistId: 144727,
+                mangadexId: "192aa767-2479-42c1-9780-8d65a2efd36a"
+            },
+            {
+                id: "ruri-dragon",
+                title: "RuriDragon",
+                anilistId: 150440,
+                mangadexId: "",
+                note: "Returned from a long hiatus with a biweekly digital schedule."
+            },
+            {
+                id: "record-of-ragnarok",
+                title: "Record of Ragnarok",
+                anilistId: 103850,
+                mangadexId: "b5b21ca1-bba5-4b9a-8cd1-6248f731650b"
+            },
+            {
+                id: "grand-blue",
+                title: "Grand Blue Dreaming",
+                anilistId: 87395,
+                mangadexId: "fffbfac3-b7ad-41ee-9581-b4d90ecec941"
+            },
+            {
+                id: "gangsta",
+                title: "Gangsta.",
+                anilistId: 54903,
+                mangadexId: "9b400b1d-c43f-4eb3-bf25-561f61f61f82",
+                note: "On hiatus due to author health issues."
+            },
+
         ];
 
         // 2. Helper functions to calculate days ago
@@ -359,32 +434,34 @@
                 container.appendChild(card);
             }
 
-            // Collect all AniList IDs into one list
-            const allIds = mangaList.map(m => m.anilistId);
-
-            // Fetch all manga info in ONE API call (prevents rate limits!)
+                       // Fetch AniList data in batches of 50 (the maximum allowed by AniList)
             const anilistUrl = "https://" + "graphql.anilist.co";
-            const query = `
-                query ($ids: [Int]) {
-                    Page(perPage: 50) {
-                        media(id_in: $ids, type: MANGA) {
-                            id
-                            status
-                            chapters
-                            updatedAt
-                            genres
+            let mediaResults = [];
+
+            for (let i = 0; i < mangaList.length; i += 50) {
+                const batchIds = mangaList.slice(i, i + 50).map(m => m.anilistId);
+                const query = `
+                    query ($ids: [Int]) {
+                        Page(perPage: 50) {
+                            media(id_in: $ids, type: MANGA) {
+                                id
+                                status
+                                chapters
+                                updatedAt
+                                genres
+                            }
                         }
                     }
-                }
-            `;
+                `;
 
-            const alResponse = await fetch(anilistUrl, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ query: query, variables: { ids: allIds } })
-            });
-            const alData = await alResponse.json();
-            const mediaResults = alData.data.Page.media;
+                const alResponse = await fetch(anilistUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ query: query, variables: { ids: batchIds } })
+                });
+                const alData = await alResponse.json();
+                mediaResults = mediaResults.concat(alData.data.Page.media);
+            }
 
             // Match each AniList result back to its card and check MangaDex
             for (const manga of mangaList) {
