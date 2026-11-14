@@ -14,70 +14,128 @@
         <p>Track the latest chapter releases and hiatus updates for your favorite manga.</p>
     </header>
 
-    <main class="container">
-        <article>
-            <h2>World Trigger</h2>
-            <p>Status: <span id="wt-status">Loading...</span></p>
-            <p>🇯🇵 Latest Japanese: <span id="wt-jp">Loading...</span></p>
-            <p>🇬🇧 Latest English: <span id="wt-en">Loading...</span></p>
-            <a href="https://anilist.co" target="_blank">View on AniList</a>
-        </article>
+       <main class="container">
+        <!-- Search bar to filter manga live -->
+        <input type="search" id="search-input" placeholder="Search manga by title...">
+
+        <!-- JavaScript will automatically place all manga cards inside this div -->
+        <div id="manga-container"></div>
     </main>
 
     <footer class="container">
-        <small>Data powered by AniList & MangaDex API.</small>
+        <small>
+            Data powered by AniList & MangaDex API. Note: Licensed series without MangaDex uploads show the latest AniList database update instead of an exact chapter date.
+        </small>
     </footer>
 
-<script>
-    // 1. Unique IDs for World Trigger
-    const anilistId = 78151;
-    const mangadexId = "329758d5-034e-4d62-8424-75a471f478d2";
+    <script>
+        // 1. YOUR MANGA LIST (Add as many series here as you want!)
+        const mangaList = [
+            {
+                id: "wt",
+                title: "World Trigger",
+                anilistId: 78151,
+                mangadexId: "329758d5-034e-4d62-8424-75a471f478d2"
+            },
+            {
+                id: "moriarty",
+                title: "Moriarty the Patriot",
+                anilistId: 98544,
+                mangadexId: "1d9fad4e-b81a-4498-8cce-e5ddfb1e4f03"
+            }
+        ];
 
-    // 2. Helper function to calculate days ago
-    function daysAgo(dateString) {
-        const releaseDate = new Date(dateString);
-        const today = new Date();
-        const difference = today - releaseDate;
-        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-        return days === 0 ? "Today" : days + " days ago";
-    }
-
-    // 3. Fetch status from AniList API
-    async function getStatus() {
-        const apiUrl = "https://" + "graphql.anilist.co";
-        const query = `query { Media(id: ${anilistId}, type: MANGA) { status } }`;
-        
-        const response = await fetch(apiUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ query: query })
-        });
-        
-        const data = await response.json();
-        document.getElementById("wt-status").innerText = data.data.Media.status;
-    }
-
-    // 4. Fetch latest chapter from MangaDex API
-    async function getLatestChapter(language, elementId) {
-        const baseUrl = "https://" + "api.mangadex.org/manga/";
-        const params = `/feed?translatedLanguage[]=${language}&order[chapter]=desc&limit=1`;
-        
-        const response = await fetch(baseUrl + mangadexId + params);
-        const data = await response.json();
-
-        if (data.data && data.data.length > 0) {
-            const chapter = data.data[0].attributes.chapter;
-            const date = data.data[0].attributes.publishAt;
-            document.getElementById(elementId).innerText = `Chapter ${chapter} (${daysAgo(date)})`;
-        } else {
-            document.getElementById(elementId).innerText = "No chapter data found";
+        // 2. Helper functions to calculate days ago
+        function daysAgo(dateString) {
+            const days = Math.floor((new Date() - new Date(dateString)) / (1000 * 60 * 60 * 24));
+            return days === 0 ? "Today" : days + " days ago";
         }
-    }
 
-    // 5. Run all functions
-    getStatus();
-    getLatestChapter("ja", "wt-jp");
-    getLatestChapter("en", "wt-en");
-</script>
+        function daysAgoTimestamp(unixTimestamp) {
+            const days = Math.floor((new Date() - new Date(unixTimestamp * 1000)) / (1000 * 60 * 60 * 24));
+            return days === 0 ? "Today" : days + " days ago";
+        }
+
+        // 3. Build the HTML cards and fetch live API data for every manga in the list
+        async function initTracker() {
+            const container = document.getElementById("manga-container");
+
+            for (const manga of mangaList) {
+                // Create an <article> card for this manga
+                const card = document.createElement("article");
+                card.className = "manga-card";
+                card.setAttribute("data-title", manga.title.toLowerCase());
+
+                const anilistLink = "https://" + "anilist.co/manga/" + manga.anilistId;
+
+                card.innerHTML = `
+                    <h2>${manga.title}</h2>
+                    <p>Status: <span id="${manga.id}-status">Loading...</span></p>
+                    <p>🇯🇵 Latest Japanese: <span id="${manga.id}-jp">Loading...</span></p>
+                    <p>🇬🇧 Latest English: <span id="${manga.id}-en">Loading...</span></p>
+                    <a href="${anilistLink}" target="_blank">View on AniList</a>
+                `;
+                container.appendChild(card);
+
+                // Fetch live data for this specific card
+                loadMangaData(manga);
+            }
+        }
+
+        // 4. Fetch AniList status + MangaDex chapters for one manga
+        async function loadMangaData(manga) {
+            const anilistUrl = "https://" + "graphql.anilist.co";
+            const query = `query { Media(id: ${manga.anilistId}, type: MANGA) { status chapters updatedAt } }`;
+            
+            const alResponse = await fetch(anilistUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ query: query })
+            });
+            const alData = await alResponse.json();
+            const info = alData.data.Media;
+
+            document.getElementById(`${manga.id}-status`).innerText = info.status;
+
+            await checkMangaDex(manga.mangadexId, "ja", `${manga.id}-jp`, info);
+            await checkMangaDex(manga.mangadexId, "en", `${manga.id}-en`, info);
+        }
+
+        // 5. Check MangaDex or use AniList fallback
+        async function checkMangaDex(mangadexId, language, elementId, anilistBackup) {
+            try {
+                const proxy = "https://" + "corsproxy.io/?";
+                const api = "https://" + `api.mangadex.org/manga/${mangadexId}/feed?translatedLanguage[]=${language}&order[chapter]=desc&limit=1`;
+                
+                const response = await fetch(proxy + encodeURIComponent(api));
+                const data = await response.json();
+
+                if (data.data && data.data.length > 0) {
+                    const latest = data.data[0].attributes;
+                    document.getElementById(elementId).innerText = `Chapter ${latest.chapter} (${daysAgo(latest.publishAt)})`;
+                } else {
+                    const totalCh = anilistBackup.chapters ? `Total: ${anilistBackup.chapters} ch. — ` : "";
+                    document.getElementById(elementId).innerText = `${totalCh}No MangaDex chapters (AniList info updated ${daysAgoTimestamp(anilistBackup.updatedAt)})`;
+                }
+            } catch (error) {
+                document.getElementById(elementId).innerText = `Unavailable (AniList info updated ${daysAgoTimestamp(anilistBackup.updatedAt)})`;
+            }
+        }
+
+        // 6. Live search bar filter
+        document.getElementById("search-input").addEventListener("input", function(event) {
+            const searchTerm = event.target.value.toLowerCase();
+            const cards = document.querySelectorAll(".manga-card");
+
+            cards.forEach(card => {
+                const title = card.getAttribute("data-title");
+                // Show card if title matches search, otherwise hide it
+                card.style.display = title.includes(searchTerm) ? "block" : "none";
+            });
+        });
+
+        // Start the app!
+        initTracker();
+    </script>
 </body>
 </html>
