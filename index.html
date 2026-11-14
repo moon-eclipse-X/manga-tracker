@@ -1,22 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manga release tracker</title>
-<link
-  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
-  <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <header class="container">
         <h1>Manga Release Tracker</h1>
         <p>Track the latest chapter releases and hiatus updates for your favorite manga.</p>
     </header>
 
-       <main class="container">
+    <main class="container">
         <!-- Search bar to filter manga live -->
         <input type="search" id="search-input" placeholder="Search manga by title...">
+        <!-- Filter buttons -->
+        <div class="filter-buttons">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="releasing">Releasing</button>
+            <button class="filter-btn" data-filter="hiatus">On Hiatus</button>
+            <button class="filter-btn" data-filter="finished">Finished</button>
+        </div>
 
         <!-- JavaScript will automatically place all manga cards inside this div -->
         <div id="manga-container"></div>
@@ -24,11 +32,12 @@
 
     <footer class="container">
         <small>
-            Data powered by AniList & MangaDex API. Note: Licensed series without MangaDex uploads show the latest AniList database update instead of an exact chapter date.
+            Data powered by AniList & MangaDex API. Note: Licensed series without MangaDex uploads show the latest
+            AniList database update instead of an exact chapter date.
         </small>
     </footer>
 
-        <script>
+    <script>
         // 1. YOUR MANGA LIST (Add as many series here as you want!)
         const mangaList = [
             {
@@ -89,7 +98,7 @@
         async function loadMangaData(manga) {
             const anilistUrl = "https://" + "graphql.anilist.co";
             const query = `query { Media(id: ${manga.anilistId}, type: MANGA) { status chapters updatedAt } }`;
-            
+
             const alResponse = await fetch(anilistUrl, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -102,6 +111,8 @@
             const statusBadge = document.getElementById(`${manga.id}-status`);
             statusBadge.innerText = info.status;
             statusBadge.className = "status-badge status-" + info.status.toLowerCase();
+            // Save the status on the card so filter buttons can find it
+            statusBadge.closest(".manga-card").setAttribute("data-status", info.status.toLowerCase());
 
             await checkMangaDex(manga.mangadexId, "ja", `${manga.id}-jp`, info);
             await checkMangaDex(manga.mangadexId, "en", `${manga.id}-en`, info);
@@ -112,7 +123,7 @@
             try {
                 const proxy = "https://" + "corsproxy.io/?";
                 const api = "https://" + `api.mangadex.org/manga/${mangadexId}/feed?translatedLanguage[]=${language}&order[chapter]=desc&limit=1`;
-                
+
                 const response = await fetch(proxy + encodeURIComponent(api));
                 const data = await response.json();
 
@@ -128,20 +139,42 @@
             }
         }
 
-        // 6. Live search bar filter
-        document.getElementById("search-input").addEventListener("input", function(event) {
-            const searchTerm = event.target.value.toLowerCase();
+             // 6. Combined live search + status filter buttons
+        let currentFilter = "all";
+        let currentSearch = "";
+
+        function filterCards() {
             const cards = document.querySelectorAll(".manga-card");
 
             cards.forEach(card => {
                 const title = card.getAttribute("data-title");
-                // Show card if title matches search, otherwise hide it
-                card.style.display = title.includes(searchTerm) ? "block" : "none";
+                const status = card.getAttribute("data-status") || "";
+
+                const matchesSearch = title.includes(currentSearch);
+                const matchesFilter = currentFilter === "all" || status === currentFilter;
+
+                card.style.display = (matchesSearch && matchesFilter) ? "flex" : "none";
             });
+        }
+
+        // Listen to search input
+        document.getElementById("search-input").addEventListener("input", function(event) {
+            currentSearch = event.target.value.toLowerCase();
+            filterCards();
         });
 
-        // Start the app!
-        initTracker();
+        // Listen to filter button clicks
+        document.querySelectorAll(".filter-btn").forEach(button => {
+            button.addEventListener("click", function() {
+                // Move the 'active' class to the clicked button
+                document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
+                this.classList.add("active");
+
+                currentFilter = this.getAttribute("data-filter");
+                filterCards();
+            });
+        });
     </script>
 </body>
+
 </html>

@@ -70,3 +70,27 @@
     display: inline-block;
     font-size: 0.9rem;
 }
+
+/* Put filter buttons in a neat row */
+.filter-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+}
+
+.filter-btn {
+    width: auto;
+    padding: 0.4rem 1rem;
+    margin-bottom: 0;
+    font-size: 0.9rem;
+    background-color: transparent;
+    color: var(--pico-primary);
+    border: 1px solid var(--pico-primary);
+}
+
+/* Highlight the currently selected filter button */
+.filter-btn.active {
+    background-color: var(--pico-primary);
+    color: var(--pico-primary-inverse);
+}
