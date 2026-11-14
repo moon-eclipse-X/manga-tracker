@@ -28,11 +28,21 @@
         <small>Data powered by AniList & MangaDex API.</small>
     </footer>
 <script>
-    // 1. Unique AniList ID for World Trigger (works for ANY manga!)
+    // 1. Unique IDs for World Trigger
     const anilistId = 78151;
+    const mangadexId = "329758d5-034e-4d62-8424-75a471f478d2";
 
-    // 2. Helper function to calculate days ago from a timestamp
-    function daysAgoFromTimestamp(unixTimestamp) {
+    // 2. Helper function to calculate days ago from a date string
+    function daysAgo(dateString) {
+        const releaseDate = new Date(dateString);
+        const today = new Date();
+        const difference = today - releaseDate;
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        return days === 0 ? "Today" : days + " days ago";
+    }
+
+    // 3. Helper function to calculate days ago from AniList timestamp
+    function daysAgoTimestamp(unixTimestamp) {
         const releaseDate = new Date(unixTimestamp * 1000);
         const today = new Date();
         const difference = today - releaseDate;
@@ -40,36 +50,54 @@
         return days === 0 ? "Today" : days + " days ago";
     }
 
-    // 3. Fetch all manga info from AniList API
-    async function getMangaData() {
-        const apiUrl = "https://" + "graphql.anilist.co";
-        const query = `
-            query {
-                Media(id: ${anilistId}, type: MANGA) {
-                    status
-                    chapters
-                    updatedAt
-                }
-            }
-        `;
-
-        const response = await fetch(apiUrl, {
+    // 4. Smart function: Try MangaDex first, fallback to AniList!
+    async function loadMangaData() {
+        // First get AniList data (always works for every manga)
+        const anilistUrl = "https://" + "graphql.anilist.co";
+        const query = `query { Media(id: ${anilistId}, type: MANGA) { status chapters updatedAt } }`;
+        
+        const alResponse = await fetch(anilistUrl, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ query: query })
         });
+        const alData = await alResponse.json();
+        const manga = alData.data.Media;
 
-        const result = await response.json();
-        const manga = result.data.Media;
-
-        // Fill your HTML spans
+        // Show official status immediately
         document.getElementById("wt-status").innerText = manga.status;
-        document.getElementById("wt-chapters").innerText = manga.chapters ? `Chapter ${manga.chapters}` : "Ongoing (unknown total)";
-        document.getElementById("wt-updated").innerText = daysAgoFromTimestamp(manga.updatedAt);
+
+        // Now check MangaDex for Japanese and English chapters
+        await checkMangaDex("ja", "wt-jp", manga);
+        await checkMangaDex("en", "wt-en", manga);
     }
 
-    // 4. Run the function
-    getMangaData();
+    // 5. Check MangaDex, or use AniList as backup if empty
+    async function checkMangaDex(language, elementId, anilistBackup) {
+        try {
+            const proxy = "https://" + "corsproxy.io/?";
+            const api = "https://" + `api.mangadex.org/manga/${mangadexId}/feed?translatedLanguage[]=${language}&order[chapter]=desc&limit=1`;
+            
+            const response = await fetch(proxy + encodeURIComponent(api));
+            const data = await response.json();
+
+            if (data.data && data.data.length > 0) {
+                // MangaDex has chapter data! Show exact chapter and date
+                const latest = data.data[0].attributes;
+                document.getElementById(elementId).innerText = `Chapter ${latest.chapter} (${daysAgo(latest.publishAt)})`;
+            } else {
+                // MangaDex is empty (like World Trigger) -> Use AniList backup!
+                const chText = anilistBackup.chapters ? `Ch. ${anilistBackup.chapters}` : "Official release";
+                document.getElementById(elementId).innerText = `${chText} (Updated ${daysAgoTimestamp(anilistBackup.updatedAt)})`;
+            }
+        } catch (error) {
+            // If proxy fails -> Also use AniList backup!
+            document.getElementById(elementId).innerText = `Updated ${daysAgoTimestamp(anilistBackup.updatedAt)}`;
+        }
+    }
+
+    // 6. Start everything!
+    loadMangaData();
 </script>
 </body>
 </html>
