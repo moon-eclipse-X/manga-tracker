@@ -1043,24 +1043,8 @@
 
               // 3. Build HTML cards and fetch ALL AniList data in batches of 50
                       // Load saved favorites from the visitor's browser
-        let savedFavorites = JSON.parse(localStorage.getItem("mangaFavorites")) || [];
 
-        // Toggle favorite status when clicking the star button
-        function toggleFavorite(mangaId, buttonElement) {
-            if (savedFavorites.includes(mangaId)) {
-                savedFavorites = savedFavorites.filter(id => id !== mangaId);
-                buttonElement.classList.remove("is-fav");
-                buttonElement.innerText = "☆";
-            } else {
-                savedFavorites.push(mangaId);
-                buttonElement.classList.add("is-fav");
-                buttonElement.innerText = "★";
-            }
-            localStorage.setItem("mangaFavorites", JSON.stringify(savedFavorites));
-            filterCards();
-        }
-
-        // Load personal reading progress from browser storage
+            // Load personal reading progress from browser storage
         let savedProgress = JSON.parse(localStorage.getItem("mangaProgress")) || {};
 
         // Update chapter progress (+1 or -1) without needing an account
@@ -1072,10 +1056,12 @@
             localStorage.setItem("mangaProgress", JSON.stringify(savedProgress));
             document.getElementById(`${mangaId}-progress`).innerText = next;
         }
+
+        // 3. Build HTML cards and fetch ALL AniList data in batches of 50
         async function initTracker() {
             const container = document.getElementById("manga-container");
             if (!container) return;
-            
+
             // Automatically remove duplicate entries based on anilistId
             const seenIds = new Set();
             const uniqueMangaList = mangaList.filter(manga => {
@@ -1085,23 +1071,23 @@
             });
 
             // Sort alphabetically (A-Z)
-            mangaList.sort((a, b) => a.title.localeCompare(b.title));
+            uniqueMangaList.sort((a, b) => a.title.localeCompare(b.title));
 
             // Create all cards first
-            for (const manga of mangaList) {
+            for (const manga of uniqueMangaList) {
                 const card = document.createElement("article");
                 card.className = "manga-card";
                 card.setAttribute("data-id", manga.id);
                 card.setAttribute("data-title", manga.title.toLowerCase());
 
-                               const isFav = savedFavorites.includes(manga.id);
+                const isFav = savedFavorites.includes(manga.id);
                 const starIcon = isFav ? "★" : "☆";
                 const favClass = isFav ? "fav-btn is-fav" : "fav-btn";
                 const userCh = savedProgress[manga.id] || 0;
                 const noteHtml = manga.note ? `<p class="custom-note">📝 ${manga.note}</p>` : "";
                 const anilistLink = "https://" + "anilist.co/manga/" + manga.anilistId;
-                // Use custom readUrl if provided, otherwise search official MANGA Plus automatically
-                const officialReadLink = manga.readUrl || `https://shueisha.co.jp{encodeURIComponent(manga.title)}`;
+                const mpBase = "https://" + "mangaplus.shueisha.co.jp/search_result?keyword=";
+                const officialReadLink = manga.readUrl || (mpBase + encodeURIComponent(manga.title));
 
                 card.innerHTML = `
                     <div>
@@ -1132,8 +1118,8 @@
             const anilistUrl = "https://" + "graphql.anilist.co";
             let mediaResults = [];
 
-            for (let i = 0; i < mangaList.length; i += 50) {
-                const batchIds = mangaList.slice(i, i + 50).map(m => m.anilistId);
+            for (let i = 0; i < uniqueMangaList.length; i += 50) {
+                const batchIds = uniqueMangaList.slice(i, i + 50).map(m => m.anilistId);
                 const query = `
                     query ($ids: [Int]) {
                         Page(perPage: 50) {
@@ -1154,17 +1140,18 @@
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ query: query, variables: { ids: batchIds } })
                 });
-                const alData = await alResponse.json();
+                                          const alData = await alResponse.json();
                 mediaResults = mediaResults.concat(alData.data.Page.media);
             }
 
             // Match each AniList result back to its card and queue Jikan safely
             let delay = 0;
-            for (const manga of mangaList) {
+            for (const manga of uniqueMangaList) {
                 const info = mediaResults.find(item => item.id === manga.anilistId);
                 if (!info) continue;
 
                 const statusBadge = document.getElementById(`${manga.id}-status`);
+
                 statusBadge.innerText = info.status;
                 statusBadge.className = "status-badge status-" + info.status.toLowerCase();
 
@@ -1254,7 +1241,7 @@
                 }
             });
 
-            // Update the lightweight counter text
+                       // Update the lightweight counter text
             const countElement = document.getElementById("results-count");
             if (countElement) {
                 countElement.innerText = `Showing ${visibleCount} of ${cards.length} manga`;
@@ -1281,7 +1268,7 @@
                 filterCards();
             });
         });
-
+        
         // Start the app!
         initTracker();
         filterCards();
