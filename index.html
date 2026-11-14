@@ -57,16 +57,16 @@
     }
 
     // 4. Fetch latest chapter from MangaDex API
-    async function getLatestChapter(language, elementId) {
+     async function getLatestChapter(language, elementId) {
         try {
-            const baseUrl = "https://" + "api.mangadex.org/manga/";
-            const params = `/feed?translatedLanguage[]=${language}&order[chapter]=desc&limit=1`;
+            const proxy = "https://" + "corsproxy.io/?";
+            const api = "https://" + `api.mangadex.org/manga/${mangadexId}/feed?translatedLanguage[]=${language}&order[chapter]=desc&limit=1`;
             
-            const response = await fetch(baseUrl + mangadexId + params);
+            // Encode the URL safely for the proxy
+            const response = await fetch(proxy + encodeURIComponent(api));
             const data = await response.json();
 
             if (data.data && data.data.length > 0) {
-                // Added [0] to grab the first item in the list
                 const latest = data.data[0].attributes;
                 const chapter = latest.chapter;
                 const date = latest.publishAt;
@@ -75,7 +75,6 @@
                 document.getElementById(elementId).innerText = "No chapter data found";
             }
         } catch (error) {
-            // Shows an error message instead of getting stuck on Loading
             document.getElementById(elementId).innerText = "Error loading data";
             console.error(error);
         }
