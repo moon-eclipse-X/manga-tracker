@@ -390,20 +390,20 @@
             filterCards();
         }
 
-        // Helper to format AniList official publication info accurately
+            // Helper to format AniList official publication info without parentheses
         function formatOfficialInfo(info) {
             const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             const chText = info.chapters ? `${info.chapters} ch. • ` : "";
 
             if (info.status === "FINISHED" && info.endDate && info.endDate.year) {
-                const m = info.endDate.month ? months[info.endDate.month - 1] + " " : "";
+                const m = info.endDate.month ? `${months[info.endDate.month - 1]} ` : "";
                 return `${chText}Completed • ${m}${info.endDate.year}`;
             }
             if (info.startDate && info.startDate.year) {
-                const m = info.startDate.month ? months[info.startDate.month - 1] + " " : "";
+                const m = info.startDate.month ? `${months[info.startDate.month - 1]} ` : "";
                 return `${chText}Serializing since ${m}${info.startDate.year}`;
             }
-            return `${chText}Official release (check publisher)`;
+            return `${chText}Official release`;
         }
 
         // 3. Build HTML cards and fetch ALL AniList data in batches of 50
