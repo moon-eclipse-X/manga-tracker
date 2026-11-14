@@ -1042,6 +1042,36 @@
         }
 
               // 3. Build HTML cards and fetch ALL AniList data in batches of 50
+                      // Load saved favorites from the visitor's browser
+        let savedFavorites = JSON.parse(localStorage.getItem("mangaFavorites")) || [];
+
+        // Toggle favorite status when clicking the star button
+        function toggleFavorite(mangaId, buttonElement) {
+            if (savedFavorites.includes(mangaId)) {
+                savedFavorites = savedFavorites.filter(id => id !== mangaId);
+                buttonElement.classList.remove("is-fav");
+                buttonElement.innerText = "☆";
+            } else {
+                savedFavorites.push(mangaId);
+                buttonElement.classList.add("is-fav");
+                buttonElement.innerText = "★";
+            }
+            localStorage.setItem("mangaFavorites", JSON.stringify(savedFavorites));
+            filterCards();
+        }
+
+        // Load personal reading progress from browser storage
+        let savedProgress = JSON.parse(localStorage.getItem("mangaProgress")) || {};
+
+        // Update chapter progress (+1 or -1) without needing an account
+        function updateProgress(mangaId, change) {
+            const current = savedProgress[mangaId] || 0;
+            const next = Math.max(0, current + change);
+            savedProgress[mangaId] = next;
+
+            localStorage.setItem("mangaProgress", JSON.stringify(savedProgress));
+            document.getElementById(`${mangaId}-progress`).innerText = next;
+        }
         async function initTracker() {
             const container = document.getElementById("manga-container");
             if (!container) return;
