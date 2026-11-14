@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manga release tracker</title>
+<link
+  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="container">
+        <h1>Manga Release Tracker</h1>
+        <p>Track the latest chapter releases and hiatus updates for your favorite manga.</p>
+    </header>
+
+    <main class="container">
+        <article>
+            <h2>World Trigger</h2>
+            <p>Status: <span id="wt-status">Loading...</span></p>
+            <p>🇯🇵 Latest Japanese: <span id="wt-jp">Loading...</span></p>
+            <p>🇬🇧 Latest English: <span id="wt-en">Loading...</span></p>
+            <a href="https://anilist.co" target="_blank">View on AniList</a>
+        </article>
+    </main>
+
+    <footer class="container">
+        <small>Data powered by AniList & MangaDex API.</small>
+    </footer>
+
+<script>
+    // 1. Unique IDs for World Trigger
+    const anilistId = 78151;
+    const mangadexId = "329758d5-034e-4d62-8424-75a471f478d2";
+
+    // 2. Helper function to calculate days ago
+    function daysAgo(dateString) {
+        const releaseDate = new Date(dateString);
+        const today = new Date();
+        const difference = today - releaseDate;
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        return days === 0 ? "Today" : days + " days ago";
+    }
+
+    // 3. Fetch status from AniList API
+    async function getStatus() {
+        const apiUrl = "https://" + "graphql.anilist.co";
+        const query = `query { Media(id: ${anilistId}, type: MANGA) { status } }`;
+        
+        const response = await fetch(apiUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query: query })
+        });
+        
+        const data = await response.json();
+        document.getElementById("wt-status").innerText = data.data.Media.status;
+    }
+
+    // 4. Fetch latest chapter from MangaDex API
+    async function getLatestChapter(language, elementId) {
+        const baseUrl = "https://" + "api.mangadex.org/manga/";
+        const params = `/feed?translatedLanguage[]=${language}&order[chapter]=desc&limit=1`;
+        
+        const response = await fetch(baseUrl + mangadexId + params);
+        const data = await response.json();
+
+        if (data.data && data.data.length > 0) {
+            const chapter = data.data[0].attributes.chapter;
+            const date = data.data[0].attributes.publishAt;
+            document.getElementById(elementId).innerText = `Chapter ${chapter} (${daysAgo(date)})`;
+        } else {
+            document.getElementById(elementId).innerText = "No chapter data found";
+        }
+    }
+
+    // 5. Run all functions
+    getStatus();
+    getLatestChapter("ja", "wt-jp");
+    getLatestChapter("en", "wt-en");
+</script>
+</body>
+</html>
