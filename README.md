@@ -1,45 +1,20 @@
 # Manga Release Tracker
 
-A simple, fast web app to track the latest chapter releases and hiatus updates for manga using the **AniList** and **MangaDex** APIs.
+A fast, lightweight web application to track the publication status, volume counts, and hiatus updates for 100+ popular manga and manhwa series in one clean dashboard.
 
----
+**Live Demo:** [manga-tracker-moon-eclipse-x.vercel.app](https://vercel.app)
 
-## How to Add a New Manga
+## Features
 
-### 1. Copy the Template
+- **Live Status & Publication Data:** Automatically fetches real-time status (`RELEASING`, `ON HIATUS`, `FINISHED`), genres, and publication dates via the **AniList GraphQL API** (in batches of 50).
+- **Volume & Chapter Counts:** Combines AniList data with the **Jikan (MyAnimeList) API** using a rate-limited queue and 24-hour `localStorage` caching.
+- **No-Account Favorites (⭐):** Click the star icon on any card to bookmark your personal reading list locally in your browser.
+- **Instant Search & Multi-Filtering:** Filter live by title, publication status, favorites, or 10 different genres with a real-time result counter.
+- **Custom Hiatus Notes:** Includes curated context notes for series known for irregular schedules or extended author breaks.
 
-Paste this block into the `mangaList` array inside `index.html` (do not forget the comma `,` after the previous item):
+## Tech Stack
 
-```javascript
-{
-    id: "short-unique-name",
-    title: "Exact Manga Title",
-    anilistId: 00000,
-    mangadexId: "paste-mangadex-uuid-here"
-},
-```
-
-(Note: The website automatically sorts all manga alphabetically from A to Z, so you can paste new entries anywhere in the list.)
-
----
-
-### 2. Where to Find the IDs
-
-#### AniList ID (Numbers only)
-
-1. Go to `anilist.co` and search for the manga.
-2. Open the manga page and look at your browser's address bar.
-3. Example URL: `anilist.co/manga/30026/Hunter-x-Hunter/`
-4. Copy the number right after `/manga/` (`30026`) and paste it **without quotes** (`anilistId: 30026`).
-
-#### MangaDex ID (Long UUID with dashes)
-
-1. Go to `mangadex.org` and search for the same manga.
-2. Open the manga page and look at the address bar.
-3. Example URL: `mangadex.org/title/db6c8568-b826-4473-9317-91191d1d452c/hunter-x-hunter`
-4. Copy the long code right after `/title/` and paste it **with quotes** (`mangadexId: "db6c8568-b826-4473-9317-91191d1d452c"`).
-
-#### Quick Shortcut & Fallback Tip
-
-* **Shortcut:** Once you open a manga on MangaDex, scroll down to the **Track** section and click the **AniList** button to jump straight to the matching AniList page.
-* **Not on MangaDex?** Leave the ID empty (`mangadexId: ""`). The tracker will automatically fall back to AniList database updates.
+- **Frontend:** Semantic HTML5, CSS3, Vanilla JavaScript (ES6+)
+- **Styling:** [Pico.css](https://picocss.com) (Dark Mode) with custom responsive CSS Grid
+- **APIs:** AniList GraphQL API & Jikan REST API
+- **Hosting:** Deployed via GitHub & Vercel
