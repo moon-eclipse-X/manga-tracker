@@ -690,6 +690,8 @@
                 mediaResults = mediaResults.concat(alData.data.Page.media);
             }
             // Match each AniList result back to its card and check MangaUpdates
+                     // Match each AniList result back to its card and queue MangaUpdates safely
+            let delay = 0;
             for (const manga of mangaList) {
                 const info = mediaResults.find(item => item.id === manga.anilistId);
                 if (!info) continue;
@@ -702,39 +704,54 @@
                 card.setAttribute("data-status", info.status.toLowerCase());
                 card.setAttribute("data-genres", info.genres.join(",").toLowerCase());
 
-                // Fetch exact latest chapter and release date from MangaUpdates
-                checkMangaUpdates(manga.title, `${manga.id}-latest`, info);
+                // Show AniList info immediately so cards never stay on "Loading..."
+                document.getElementById(`${manga.id}-latest`).innerText = formatOfficialInfo(info);
+
+                // Check MangaUpdates one by one (every 350ms) to avoid rate limits
+                setTimeout(() => {
+                    checkMangaUpdates(manga.title, `${manga.id}-latest`, info);
+                }, delay);
+                delay += 350;
             }
         }
-        // 4. Fetch exact latest chapter & release date via your own Vercel API route
+
+        // 4. Fetch exact latest chapter with 24-hour browser cache + rate-limit protection
         async function checkMangaUpdates(mangaTitle, elementId, anilistBackup) {
+            const cacheKey = "mu_cache_" + mangaTitle.toLowerCase();
+            const cached = JSON.parse(localStorage.getItem(cacheKey));
+            const oneDay = 24 * 60 * 60 * 1000;
+
+            // Use cached chapter if less than 24 hours old
+            if (cached && (Date.now() - cached.savedAt < oneDay)) {
+                if (cached.text) document.getElementById(elementId).innerText = cached.text;
+                return;
+            }
+
             try {
                 const response = await fetch(`/api/manga-updates?title=${encodeURIComponent(mangaTitle)}`);
                 const data = await response.json();
 
                 if (data.results && data.results.length > 0) {
-                    const record = data.results[0].record;
+                    const record = data.results.record;
                     const latestCh = record.latest_chapter;
 
                     if (latestCh) {
-                        // Safely check if last_updated timestamp is a valid number
                         const ts = record.last_updated && record.last_updated.timestamp;
+                        let resultText = `Chapter ${latestCh}`;
                         if (ts && !isNaN(ts)) {
-                            const days = Math.floor((new Date() - new Date(ts * 1000)) / (1000 * 60 * 60 * 24));
+                            const days = Math.floor((new Date() - new Date(ts * 1000)) / oneDay);
                             const timeAgo = days === 0 ? "Today" : `${days} days ago`;
-                            document.getElementById(elementId).innerText = `Chapter ${latestCh} • ${timeAgo}`;
-                        } else {
-                            document.getElementById(elementId).innerText = `Chapter ${latestCh}`;
+                            resultText = `Chapter ${latestCh} • ${timeAgo}`;
                         }
+                        document.getElementById(elementId).innerText = resultText;
+                        localStorage.setItem(cacheKey, JSON.stringify({ text: resultText, savedAt: Date.now() }));
                         return;
                     }
                 }
-                document.getElementById(elementId).innerText = formatOfficialInfo(anilistBackup);
             } catch (error) {
-                document.getElementById(elementId).innerText = formatOfficialInfo(anilistBackup);
+                // Keep the clean AniList info already shown on the card
             }
         }
-
 
         // 5. Combined live search + status/favorites filter + genre filter
         let currentFilter = "all";
