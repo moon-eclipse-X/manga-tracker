@@ -1,0 +1,72 @@
+/* Put manga cards side-by-side on wider screens */
+#manga-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+/* Remove extra bottom margin inside the grid */
+.manga-card {
+    margin-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Base style for the status badge */
+.status-badge {
+    display: inline-block;
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* Specific colors per status */
+.status-releasing {
+    background-color: rgba(46, 204, 113, 0.2);
+    color: #2ecc71;
+    border: 1px solid #2ecc71;
+}
+
+.status-hiatus {
+    background-color: rgba(231, 76, 60, 0.2);
+    color: #e74c3c;
+    border: 1px solid #e74c3c;
+}
+
+.status-finished {
+    background-color: rgba(52, 152, 219, 0.2);
+    color: #3498db;
+    border: 1px solid #3498db;
+}
+
+/* Subtle lift effect when hovering over a card */
+.manga-card {
+    border: 1px solid transparent;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.manga-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--pico-primary);
+}
+
+/* Keep card text compact and easy to scan */
+.manga-card h2 {
+    margin-bottom: 0.75rem;
+    font-size: 1.35rem;
+}
+
+.manga-card p {
+    margin-bottom: 0.4rem;
+    font-size: 0.95rem;
+}
+
+.manga-card a {
+    margin-top: 1rem;
+    display: inline-block;
+    font-size: 0.9rem;
+}
