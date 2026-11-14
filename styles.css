@@ -149,3 +149,10 @@ button.fav-btn.is-fav {
     font-size: 0.85rem;
     border-radius: 0 4px 4px 0;
 }
+
+/* Subtle lightweight results counter */
+.results-count {
+    font-size: 0.9rem;
+    color: var(--pico-muted-color);
+    margin-bottom: 1rem;
+}

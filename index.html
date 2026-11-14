@@ -44,6 +44,8 @@
             <option value="supernatural">Supernatural</option>
         </select>
 
+        <!-- Lightweight result counter -->
+        <p id="results-count" class="results-count"></p>
 
         <!-- JavaScript will automatically place all manga cards inside this div -->
         <div id="manga-container"></div>
@@ -436,6 +438,7 @@
 
         function filterCards() {
             const cards = document.querySelectorAll(".manga-card");
+            let visibleCount = 0;
 
             cards.forEach(card => {
                 const id = card.getAttribute("data-id");
@@ -453,8 +456,19 @@
                     matchesFilter = status === currentFilter;
                 }
 
-                card.style.display = (matchesSearch && matchesFilter && matchesGenre) ? "flex" : "none";
+                if (matchesSearch && matchesFilter && matchesGenre) {
+                    card.style.display = "flex";
+                    visibleCount++;
+                } else {
+                    card.style.display = "none";
+                }
             });
+
+            // Update the lightweight counter text
+            const countElement = document.getElementById("results-count");
+            if (countElement) {
+                countElement.innerText = `Showing ${visibleCount} of ${cards.length} manga`;
+            }
         }
 
         // Listen to search input, genre dropdown, and filter buttons
@@ -479,7 +493,9 @@
         });
 
         // Start the app!
+        // Start the app!
         initTracker();
+        filterCards();
     </script>
 
     <!-- Vercel Web Analytics (added the missing opening <script> tag!) -->
