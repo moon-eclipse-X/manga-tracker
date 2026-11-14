@@ -290,7 +290,7 @@
                 anilistId: 74347,
                 mangadexId: "d8a959f7-648e-4c8d-8f23-f1f3f8e129f3"
             },
-                        {
+            {
                 id: "land-of-the-lustrous",
                 title: "Land of the Lustrous",
                 anilistId: 74489,
@@ -367,37 +367,23 @@
 
         ];
 
-        // 2. Helper functions to calculate days ago
-        function daysAgo(dateString) {
-            const days = Math.floor((new Date() - new Date(dateString)) / (1000 * 60 * 60 * 24));
-            return days === 0 ? "Today" : days + " days ago";
-        }
+               // Helper to format AniList official publication info accurately
+        function formatOfficialInfo(info) {
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const chText = info.chapters ? `${info.chapters} ch. • ` : "";
 
-        function daysAgoTimestamp(unixTimestamp) {
-            const days = Math.floor((new Date() - new Date(unixTimestamp * 1000)) / (1000 * 60 * 60 * 24));
-            return days === 0 ? "Today" : days + " days ago";
-        }
-
-        // Load saved favorites from the visitor's browser
-        let savedFavorites = JSON.parse(localStorage.getItem("mangaFavorites")) || [];
-
-        // Toggle favorite status when clicking the star button
-        function toggleFavorite(mangaId, buttonElement) {
-            if (savedFavorites.includes(mangaId)) {
-                savedFavorites = savedFavorites.filter(id => id !== mangaId);
-                buttonElement.classList.remove("is-fav");
-                buttonElement.innerText = "☆";
-            } else {
-                savedFavorites.push(mangaId);
-                buttonElement.classList.add("is-fav");
-                buttonElement.innerText = "★";
+            if (info.status === "FINISHED" && info.endDate && info.endDate.year) {
+                const m = info.endDate.month ? months[info.endDate.month - 1] + " " : "";
+                return `${chText}Completed (${m}${info.endDate.year})`;
             }
-            // Save updated list in browser storage
-            localStorage.setItem("mangaFavorites", JSON.stringify(savedFavorites));
-            filterCards();
+            if (info.startDate && info.startDate.year) {
+                const m = info.startDate.month ? months[info.startDate.month - 1] + " " : "";
+                return `${chText}Serializing since ${m}${info.startDate.year} (Official release)`;
+            }
+            return `${chText}Official release (check publisher)`;
         }
 
-        // 3. Build HTML cards and fetch ALL AniList data in 1 single batch request
+        // 3. Build HTML cards and fetch ALL AniList data in batches of 50
         async function initTracker() {
             const container = document.getElementById("manga-container");
             if (!container) return;
@@ -434,7 +420,7 @@
                 container.appendChild(card);
             }
 
-                       // Fetch AniList data in batches of 50 (the maximum allowed by AniList)
+            // Fetch AniList data in batches of 50 (supports unlimited manga!)
             const anilistUrl = "https://" + "graphql.anilist.co";
             let mediaResults = [];
 
@@ -447,8 +433,9 @@
                                 id
                                 status
                                 chapters
-                                updatedAt
                                 genres
+                                startDate { year month }
+                                endDate { year month }
                             }
                         }
                     }
@@ -480,15 +467,14 @@
                     checkMangaDex(manga.mangadexId, "ja", `${manga.id}-jp`, info);
                     checkMangaDex(manga.mangadexId, "en", `${manga.id}-en`, info);
                 } else {
-                    const totalCh = info.chapters ? `Total: ${info.chapters} ch. — ` : "";
-                    const fallbackText = `${totalCh}Official release (AniList info updated ${daysAgoTimestamp(info.updatedAt)})`;
+                    const fallbackText = formatOfficialInfo(info);
                     document.getElementById(`${manga.id}-jp`).innerText = fallbackText;
                     document.getElementById(`${manga.id}-en`).innerText = fallbackText;
                 }
             }
         }
 
-        // 4. Check MangaDex or use AniList fallback
+        // 4. Check MangaDex or use accurate AniList publication info as fallback
         async function checkMangaDex(mangadexId, language, elementId, anilistBackup) {
             try {
                 const proxy = "https://" + "corsproxy.io/?";
@@ -501,11 +487,10 @@
                     const latest = data.data[0].attributes;
                     document.getElementById(elementId).innerText = `Chapter ${latest.chapter} (${daysAgo(latest.publishAt)})`;
                 } else {
-                    const totalCh = anilistBackup.chapters ? `Total: ${anilistBackup.chapters} ch. — ` : "";
-                    document.getElementById(elementId).innerText = `${totalCh}No MangaDex chapters (AniList info updated ${daysAgoTimestamp(anilistBackup.updatedAt)})`;
+                    document.getElementById(elementId).innerText = formatOfficialInfo(anilistBackup);
                 }
             } catch (error) {
-                document.getElementById(elementId).innerText = `Unavailable (AniList info updated ${daysAgoTimestamp(anilistBackup.updatedAt)})`;
+                document.getElementById(elementId).innerText = formatOfficialInfo(anilistBackup);
             }
         }
         // 5. Combined live search + status/favorites filter + genre filter
