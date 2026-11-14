@@ -624,7 +624,7 @@
             return `${chText}Official release`;
         }
 
-        // 3. Build HTML cards and fetch ALL AniList data in batches of 50
+              // 3. Build HTML cards and fetch ALL AniList data in batches of 50
         async function initTracker() {
             const container = document.getElementById("manga-container");
             if (!container) return;
@@ -642,7 +642,7 @@
                 const isFav = savedFavorites.includes(manga.id);
                 const starIcon = isFav ? "★" : "☆";
                 const favClass = isFav ? "fav-btn is-fav" : "fav-btn";
-                const noteHtml = manga.note ? `<p class="custom-note">${manga.note}</p>` : "";
+                const noteHtml = manga.note ? `<p class="custom-note">📝 ${manga.note}</p>` : "";
                 const anilistLink = "https://" + "anilist.co/manga/" + manga.anilistId;
 
                 card.innerHTML = `
@@ -652,7 +652,7 @@
                             <button class="${favClass}" onclick="toggleFavorite('${manga.id}', this)" title="Save to favorites">${starIcon}</button>
                         </div>
                         <p>Status: <span id="${manga.id}-status">Loading...</span></p>
-                                                <p>Latest Chapter: <span id="${manga.id}-latest">Loading...</span></p>
+                        <p>Latest Chapter: <span id="${manga.id}-latest">Loading...</span></p>
                         ${noteHtml}
                     </div>
                     <a href="${anilistLink}" target="_blank">View on AniList</a>
@@ -689,8 +689,8 @@
                 const alData = await alResponse.json();
                 mediaResults = mediaResults.concat(alData.data.Page.media);
             }
-            // Match each AniList result back to its card and check MangaUpdates
-                     // Match each AniList result back to its card and queue MangaUpdates safely
+
+            // Match each AniList result back to its card and queue Jikan safely
             let delay = 0;
             for (const manga of mangaList) {
                 const info = mediaResults.find(item => item.id === manga.anilistId);
@@ -707,42 +707,41 @@
                 // Show AniList info immediately so cards never stay on "Loading..."
                 document.getElementById(`${manga.id}-latest`).innerText = formatOfficialInfo(info);
 
-                // Check MangaUpdates one by one (every 350ms) to avoid rate limits
+                // Queue Jikan (MyAnimeList) every 400ms to stay safely under 3 requests/sec
                 setTimeout(() => {
-                    checkMangaUpdates(manga.title, `${manga.id}-latest`, info);
+                    checkMyAnimeList(manga.title, `${manga.id}-latest`, info);
                 }, delay);
-                delay += 350;
+                delay += 400;
             }
         }
 
-        // 4. Fetch exact latest chapter with 24-hour browser cache + rate-limit protection
-        async function checkMangaUpdates(mangaTitle, elementId, anilistBackup) {
-            const cacheKey = "mu_cache_" + mangaTitle.toLowerCase();
+        // 4. Fetch exact chapter & volume counts from Jikan (MyAnimeList API - No proxy needed!)
+        async function checkMyAnimeList(mangaTitle, elementId, anilistBackup) {
+            const cacheKey = "mal_cache_" + mangaTitle.toLowerCase();
             const cached = JSON.parse(localStorage.getItem(cacheKey));
             const oneDay = 24 * 60 * 60 * 1000;
 
-            // Use cached chapter if less than 24 hours old
             if (cached && (Date.now() - cached.savedAt < oneDay)) {
                 if (cached.text) document.getElementById(elementId).innerText = cached.text;
                 return;
             }
 
             try {
-                const response = await fetch(`/api/manga-updates?title=${encodeURIComponent(mangaTitle)}`);
+                const apiUrl = "https://" + `api.jikan.moe/v4/manga?q=${encodeURIComponent(mangaTitle)}&limit=1`;
+                const response = await fetch(apiUrl);
                 const data = await response.json();
 
-                if (data.results && data.results.length > 0) {
-                    const record = data.results.record;
-                    const latestCh = record.latest_chapter;
+                if (data.data && data.data.length > 0) {
+                    const mal = data.data[0];
+                    const parts = [];
+                    if (mal.chapters) parts.push(`Chapter ${mal.chapters}`);
+                    if (mal.volumes) parts.push(`${mal.volumes} vols`);
 
-                    if (latestCh) {
-                        const ts = record.last_updated && record.last_updated.timestamp;
-                        let resultText = `Chapter ${latestCh}`;
-                        if (ts && !isNaN(ts)) {
-                            const days = Math.floor((new Date() - new Date(ts * 1000)) / oneDay);
-                            const timeAgo = days === 0 ? "Today" : `${days} days ago`;
-                            resultText = `Chapter ${latestCh} • ${timeAgo}`;
-                        }
+                    if (parts.length > 0) {
+                        // Combine Jikan volumes/chapters with the clean AniList date!
+                        const aniText = formatOfficialInfo(anilistBackup);
+                        const resultText = mal.chapters ? parts.join(" • ") : `${parts.join(" • ")} • ${aniText}`;
+
                         document.getElementById(elementId).innerText = resultText;
                         localStorage.setItem(cacheKey, JSON.stringify({ text: resultText, savedAt: Date.now() }));
                         return;
@@ -752,6 +751,7 @@
                 // Keep the clean AniList info already shown on the card
             }
         }
+
 
         // 5. Combined live search + status/favorites filter + genre filter
         let currentFilter = "all";
