@@ -390,7 +390,7 @@
             filterCards();
         }
 
-            // Helper to format AniList official publication info without parentheses
+        // Helper to format AniList official publication info without parentheses
         function formatOfficialInfo(info) {
             const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             const chText = info.chapters ? `${info.chapters} ch. • ` : "";
@@ -488,7 +488,6 @@
                 checkMangaUpdates(manga.title, `${manga.id}-latest`, info);
             }
         }
-
         // 4. Fetch exact latest chapter & release date via your own Vercel API route
         async function checkMangaUpdates(mangaTitle, elementId, anilistBackup) {
             try {
@@ -498,19 +497,26 @@
                 if (data.results && data.results.length > 0) {
                     const record = data.results[0].record;
                     const latestCh = record.latest_chapter;
-                    const days = Math.floor((new Date() - new Date(record.last_updated.timestamp * 1000)) / (1000 * 60 * 60 * 24));
-                    const timeAgo = days === 0 ? "Today" : days + " days ago";
 
                     if (latestCh) {
-                        document.getElementById(elementId).innerText = `Chapter ${latestCh} - ${timeAgo}`;
+                        // Safely check if last_updated timestamp is a valid number
+                        const ts = record.last_updated && record.last_updated.timestamp;
+                        if (ts && !isNaN(ts)) {
+                            const days = Math.floor((new Date() - new Date(ts * 1000)) / (1000 * 60 * 60 * 24));
+                            const timeAgo = days === 0 ? "Today" : `${days} days ago`;
+                            document.getElementById(elementId).innerText = `Chapter ${latestCh} • ${timeAgo}`;
+                        } else {
+                            document.getElementById(elementId).innerText = `Chapter ${latestCh}`;
+                        }
                         return;
                     }
                 }
-                document.getElementById(elementId).innerText = formatOfficialInfo - anilistBackup;
+                document.getElementById(elementId).innerText = formatOfficialInfo(anilistBackup);
             } catch (error) {
-                document.getElementById(elementId).innerText = formatOfficialInfo - anilistBackup;
+                document.getElementById(elementId).innerText = formatOfficialInfo(anilistBackup);
             }
         }
+
 
         // 5. Combined live search + status/favorites filter + genre filter
         let currentFilter = "all";
