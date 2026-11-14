@@ -94,3 +94,58 @@
     background-color: var(--pico-primary);
     color: var(--pico-primary-inverse);
 }
+
+/* Card header with title on the left and star button on the right */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.fav-btn {
+    width: auto;
+    padding: 0.15rem 0.5rem;
+    margin: 0;
+    background: transparent;
+    border: none;
+    font-size: 1.3rem;
+    line-height: 1;
+    color: var(--pico-muted-color);
+    cursor: pointer;
+    transition: transform 0.15s ease;
+}
+/* Remove Pico.css blue box around the star button */
+button.fav-btn {
+    width: auto;
+    padding: 0 0.25rem;
+    margin: 0;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--pico-muted-color);
+    cursor: pointer;
+    transition: transform 0.15s ease, color 0.15s ease;
+}
+
+button.fav-btn:hover {
+    transform: scale(1.25);
+    color: #f1c40f;
+}
+
+/* Gold color when saved as favorite */
+button.fav-btn.is-fav {
+    color: #f1c40f;
+}
+
+/* Custom author/hiatus note box */
+.custom-note {
+    margin-top: 0.5rem;
+    padding: 0.4rem 0.6rem;
+    border-left: 3px solid var(--pico-primary);
+    background-color: rgba(1, 170, 255, 0.08);
+    font-size: 0.85rem;
+    border-radius: 0 4px 4px 0;
+}
