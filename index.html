@@ -397,11 +397,11 @@
 
             if (info.status === "FINISHED" && info.endDate && info.endDate.year) {
                 const m = info.endDate.month ? months[info.endDate.month - 1] + " " : "";
-                return `${chText}Completed (${m}${info.endDate.year})`;
+                return `${chText}Completed • ${m}${info.endDate.year}`;
             }
             if (info.startDate && info.startDate.year) {
                 const m = info.startDate.month ? months[info.startDate.month - 1] + " " : "";
-                return `${chText}Serializing since ${m}${info.startDate.year} (Official release)`;
+                return `${chText}Serializing since ${m}${info.startDate.year}`;
             }
             return `${chText}Official release (check publisher)`;
         }
@@ -502,16 +502,16 @@
                     const timeAgo = days === 0 ? "Today" : days + " days ago";
 
                     if (latestCh) {
-                        document.getElementById(elementId).innerText = `Chapter ${latestCh} (${timeAgo})`;
+                        document.getElementById(elementId).innerText = `Chapter ${latestCh} - ${timeAgo}`;
                         return;
                     }
                 }
-                document.getElementById(elementId).innerText = formatOfficialInfo(anilistBackup);
+                document.getElementById(elementId).innerText = formatOfficialInfo - anilistBackup;
             } catch (error) {
-                document.getElementById(elementId).innerText = formatOfficialInfo(anilistBackup);
+                document.getElementById(elementId).innerText = formatOfficialInfo - anilistBackup;
             }
         }
-      
+
         // 5. Combined live search + status/favorites filter + genre filter
         let currentFilter = "all";
         let currentGenre = "all";
