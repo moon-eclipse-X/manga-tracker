@@ -498,16 +498,14 @@
         }
 
         // 4. Check MangaDex or use accurate AniList publication info as fallback
-        async function checkMangaDex(mangadexId, language, elementId, anilistBackup) {
+              async function checkMangaDex(mangadexId, language, elementId, anilistBackup) {
             try {
-                const proxy = "https://" + "corsproxy.io/?";
-                const api = "https://" + `api.mangadex.org/manga/${mangadexId}/feed?translatedLanguage[]=${language}&order[chapter]=desc&limit=1`;
-
-                const response = await fetch(proxy + encodeURIComponent(api));
+                // Use your own free Vercel API route instead of corsproxy.io!
+                const response = await fetch(`/api/mangadex?id=${mangadexId}&lang=${language}`);
                 const data = await response.json();
 
                 if (data.data && data.data.length > 0) {
-                    const latest = data.data[0].attributes;
+                    const latest = data.data.attributes;
                     document.getElementById(elementId).innerText = `Chapter ${latest.chapter} (${daysAgo(latest.publishAt)})`;
                 } else {
                     document.getElementById(elementId).innerText = formatOfficialInfo(anilistBackup);
@@ -516,6 +514,7 @@
                 document.getElementById(elementId).innerText = formatOfficialInfo(anilistBackup);
             }
         }
+
         // 5. Combined live search + status/favorites filter + genre filter
         let currentFilter = "all";
         let currentGenre = "all";
