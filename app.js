@@ -206,12 +206,12 @@ function filterCards() {
         else if (currentFilter === "reading") matchesFilter = (savedProgress[id] || 0) > 0;
         else if (currentFilter !== "all") matchesFilter = status === currentFilter;
 
-        if (matchesSearch && matchesFilter && matchesGenre) {
-            card.style.display = "flex";
-            visibleCount++;
-        } else {
-            card.style.display = "none";
-        }
+             if (matchesSearch && matchesFilter && matchesGenre) {
+          card.classList.remove("hidden");
+          visibleCount++;
+      } else {
+          card.classList.add("hidden");
+      }
     });
 
     const countElement = document.getElementById("results-count");

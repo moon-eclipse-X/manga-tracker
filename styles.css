@@ -276,3 +276,7 @@ input.progress-input {
 #back-to-top.visible {
     display: inline-flex;
 }
+
+.hidden {
+  display: none !important;
+}
