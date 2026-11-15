@@ -220,3 +220,59 @@ input.progress-input {
     font-size: 0.9rem;
     text-align: center;
 }
+
+/* Footer contact and feedback line */
+.footer-contact {
+    margin-top: 0.75rem;
+    font-size: 0.9rem;
+    color: var(--pico-muted-color);
+}
+
+.footer-contact a {
+    color: var(--pico-primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.footer-contact a:hover {
+    text-decoration: underline;
+}
+
+/* Local backup buttons */
+.backup-controls {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.backup-controls button {
+    width: auto;
+    padding: 0.35rem 0.85rem;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+/* Floating back-to-top button */
+#back-to-top {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    margin: 0;
+    border-radius: 50%;
+    font-size: 1.25rem;
+    font-weight: bold;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    z-index: 100;
+}
+
+#back-to-top.visible {
+    display: inline-flex;
+}
