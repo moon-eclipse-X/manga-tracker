@@ -238,18 +238,6 @@
                 mangadexId: ""
             },
             {
-                id: "planetes",
-                title: "Planetes",
-                anilistId: 30481,
-                mangadexId: ""
-            },
-            {
-                id: "mushishi",
-                title: "Mushishi",
-                anilistId: 30418,
-                mangadexId: ""
-            },
-            {
                 id: "march-comes-in-like-a-lion",
                 title: "March Comes in Like a Lion",
                 anilistId: 31224,
