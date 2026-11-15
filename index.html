@@ -5,10 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manga release tracker</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
-    <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2.1.1/css/pico.min.css" integrity="sha384-L1dWfspMTHU/ApYnFiMz2QID/PlP1xCW9visvBdbEkOLkSSWsP6ZJWhPw6apiXxU" crossorigin="anonymous">    <link rel="stylesheet" href="styles.css">
     <link rel="icon" type="image/svg+xml"
         href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23181c25'/%3E%3Crect x='14' y='14' width='16' height='36' rx='3' fill='%2301aaff'/%3E%3Crect x='34' y='14' width='16' height='20' rx='3' fill='%23e0e3e7'/%3E%3Ccircle cx='42' cy='43' r='7' fill='%232ecc71'/%3E%3C/svg%3E">
+    <!-- SEO and link preview metadata -->
+    <meta name="description" content="Track the latest chapter releases and hiatus updates for your favorite manga.">
+    <meta property="og:title" content="Manga Release Tracker">
+    <meta property="og:description"
+        content="Track the latest chapter releases and hiatus updates for your favorite manga.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://vercel.app">
 </head>
 
 <body>
@@ -54,6 +60,11 @@
     </main>
 
     <footer class="container">
+        <p class="footer-contact">
+            Have any questions, ideas, or feedback, or spotted a bug? Let me know at
+            <a href="mailto:referralcodes.sip851@passinbox.com">here</a>.
+        </p>
+
         <small>
             Data powered by AniList & MangaDex API. Note: Licensed series without MangaDex uploads show the latest
             AniList database update instead of an exact chapter date.
@@ -1086,7 +1097,7 @@
 
             // Create all cards first
             for (const manga of uniqueMangaList) {
-                               const card = document.createElement("article");
+                const card = document.createElement("article");
                 card.className = "manga-card";
                 card.setAttribute("data-id", manga.id);
                 card.setAttribute("data-title", manga.title.toLowerCase());
@@ -1120,10 +1131,10 @@
                                 <button class="step-btn" onclick="updateProgress('${manga.id}', 1)" title="Next chapter">+1</button>
                             </div>
                         </div>
-                    <div class="card-links">
-                        <a href="${anilistLink}" target="_blank">AniList</a>
-                        <a href="${officialReadLink}" target="_blank" class="read-link">Read Official ↗</a>
-                    </div>
+                   <div class="card-links">
+    <a href="${anilistLink}" target="_blank" rel="noopener noreferrer">AniList</a>
+    <a href="${officialReadLink}" target="_blank" rel="noopener noreferrer" class="read-link">Read Official ↗</a>
+</div>
                 `;
                 container.appendChild(card);
             }
@@ -1296,8 +1307,82 @@
     <!-- Vercel Web Analytics (added the missing opening <script> tag!) -->
     <script>
         window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+        // Back-to-top button visibility and smooth scroll
+        const backToTopBtn = document.getElementById('back-to-top');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 400) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
+        });
+
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Export localStorage progress to a local JSON file
+        const exportBtn = document.getElementById('export-btn');
+        const importBtn = document.getElementById('import-btn');
+        const importFile = document.getElementById('import-file');
+
+        exportBtn.addEventListener('click', () => {
+            const backupData = JSON.stringify(localStorage, null, 2);
+            const blob = new Blob([backupData], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            const date = new Date().toISOString().slice(0, 10);
+            link.href = url;
+            link.download = `manga-tracker-backup-${date}.json`;
+            link.click();
+
+            URL.revokeObjectURL(url);
+        });
+
+        // Trigger hidden file input on import button click
+        importBtn.addEventListener('click', () => {
+            importFile.click();
+        });
+
+        // Restore localStorage data from selected JSON file
+        importFile.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const parsedData = JSON.parse(e.target.result);
+                    if (typeof parsedData !== 'object' || parsedData === null) {
+                        throw new Error('Invalid backup format');
+                    }
+
+                    Object.keys(parsedData).forEach((key) => {
+                        localStorage.setItem(key, parsedData[key]);
+                    });
+
+                    alert('Progress restored successfully! Reloading page...');
+                    location.reload();
+                } catch (error) {
+                    alert('Failed to import backup. Please select a valid JSON backup file.');
+                }
+            };
+            reader.readAsText(file);
+            importFile.value = '';
+        });
     </script>
     <script defer src="/_vercel/insights/script.js"></script>
+    <!-- Local backup controls in footer -->
+    <div class="backup-controls">
+        <button type="button" id="export-btn" class="outline secondary">Export Progress</button>
+        <button type="button" id="import-btn" class="outline secondary">Import Progress</button>
+        <input type="file" id="import-file" accept=".json" hidden>
+    </div>
+
+    <!-- Floating back-to-top button -->
+    <button type="button" id="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
 </body>
 
 </html>
