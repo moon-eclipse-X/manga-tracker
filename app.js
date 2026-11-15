@@ -54,7 +54,7 @@ async function initTracker() {
         const isFav = savedFavorites.includes(manga.id);
         const anilistUrl = ["https://", "anilist.co/manga/", manga.anilistId].join("");
         const searchQuery = encodeURIComponent(`${manga.title} read official manga`);
-        const fallbackSearch = ["https://", "://duckduckgo.com", searchQuery].join("");
+        const fallbackSearch = "https://duckduckgo.com" + "/?q=" + searchQuery;
 
         const card = document.createElement("article");
         card.className = "manga-card";
