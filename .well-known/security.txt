@@ -1,0 +1,12 @@
+# Security Policy for Manga Release Tracker
+# Found a security issue or a bug? Please let me know!
+
+Contact: referralcodes.sip851@passinbox.com
+Expires: 2035-01-01T00:00:00.000Z
+Preferred-Languages: en, nl
+Canonical: manga-tracker-nu.vercel.app/.well-known/security.txt
+
+# Additional information about this site:
+# This is a personal hobby project powered by the public AniList and MangaUpdates APIs.
+# No user accounts or passwords are used on this website.
+# Basic visitor analytics are collected to monitor site traffic.
