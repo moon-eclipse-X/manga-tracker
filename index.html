@@ -5,7 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manga release tracker</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2.1.1/css/pico.min.css" integrity="sha384-L1dWfspMTHU/ApYnFiMz2QID/PlP1xCW9visvBdbEkOLkSSWsP6ZJWhPw6apiXxU" crossorigin="anonymous">    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2.1.1/css/pico.min.css"
+        integrity="sha384-L1dWfspMTHU/ApYnFiMz2QID/PlP1xCW9visvBdbEkOLkSSWsP6ZJWhPw6apiXxU" crossorigin="anonymous">
+    <link rel="stylesheet" href="styles.css">
     <link rel="icon" type="image/svg+xml"
         href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23181c25'/%3E%3Crect x='14' y='14' width='16' height='36' rx='3' fill='%2301aaff'/%3E%3Crect x='34' y='14' width='16' height='20' rx='3' fill='%23e0e3e7'/%3E%3Ccircle cx='42' cy='43' r='7' fill='%232ecc71'/%3E%3C/svg%3E">
     <!-- SEO and link preview metadata -->
@@ -58,17 +60,23 @@
         <!-- JavaScript will automatically place all manga cards inside this div -->
         <div id="manga-container"></div>
     </main>
- <!-- Footer with local backup controls -->
-  <footer class="container">
-    <div class="backup-controls">
-      <button type="button" id="export-btn" class="outline secondary">Export Progress</button>
-      <button type="button" id="import-btn" class="outline secondary">Import Progress</button>
-      <input type="file" id="import-file" accept=".json" hidden>
-    </div>
+    <!-- Footer with local backup controls -->
+    <footer class="container">
+        <div class="backup-controls">
+            <button type="button" id="export-btn" class="outline secondary">Export Progress</button>
+            <button type="button" id="import-btn" class="outline secondary">Import Progress</button>
+            <input type="file" id="import-file" accept=".json" hidden>
+        </div>
 
         <p class="footer-contact">
-            Have any questions, ideas, or feedback, or spotted a bug? Let me know at
-            <a href="mailto:referralcodes.sip851@passinbox.com">here</a>.
+            Spotted a bug or have an idea? Open an issue or PR on
+            <a href="https://github.com/moon-eclipse-X/manga-tracker" target="_blank" rel="noopener noreferrer">
+                GitHub
+            </a>
+            or email
+            <a href="mailto:referralcodes.sip851@passinbox.com">
+                your-email@example.com
+            </a>.
         </p>
 
         <small>
@@ -77,10 +85,11 @@
         </small>
     </footer>
     <!-- Floating back-to-top button -->
-  <button type="button" id="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+    <button type="button" id="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
 
-  <!-- Load manga list first, then main application logic -->
-  <script src="manga-data.js" defer></script>
-  <script src="app.js" defer></script>
+    <!-- Load manga list first, then main application logic -->
+    <script src="manga-data.js" defer></script>
+    <script src="app.js" defer></script>
 </body>
+
 </html>
