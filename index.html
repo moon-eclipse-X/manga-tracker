@@ -1090,15 +1090,16 @@
                 card.className = "manga-card";
                 card.setAttribute("data-id", manga.id);
                 card.setAttribute("data-title", manga.title.toLowerCase());
-
                 const isFav = savedFavorites.includes(manga.id);
                 const starIcon = isFav ? "★" : "☆";
                 const favClass = isFav ? "fav-btn is-fav" : "fav-btn";
                 const userCh = savedProgress[manga.id] || 0;
                 const noteHtml = manga.note ? `<p class="custom-note">${manga.note}</p>` : "";
                 const anilistLink = "https://" + "anilist.co/manga/" + manga.anilistId;
-                const mpBase = "https://" + "mangaplus.shueisha.co.jp/search_result?keyword=";
-                const officialReadLink = manga.readUrl || (mpBase + encodeURIComponent(manga.title));
+                // Fallback to a smart Google search for official publishers if no specific readUrl is set
+                const googleBase = "https://" + "://google.com" + "/search?q=";
+                const fallbackSearch = googleBase + encodeURIComponent(manga.title + " read official manga");
+                const officialReadLink = manga.readUrl || fallbackSearch;
 
                 card.innerHTML = `
                     <div>
@@ -1224,7 +1225,7 @@
         }
 
 
-                // 5. Combined live search + status/favorites filter + genre filter
+        // 5. Combined live search + status/favorites filter + genre filter
         let currentFilter = "all";
         let currentGenre = "all";
         let currentSearch = "";
