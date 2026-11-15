@@ -51,10 +51,18 @@ async function initTracker() {
         .sort((a, b) => a.title.localeCompare(b.title));
 
     uniqueMangaList.forEach((manga) => {
-        const isFav = savedFavorites.includes(manga.id);
+                             const isFav = savedFavorites.includes(manga.id);
         const anilistUrl = ["https://", "anilist.co/manga/", manga.anilistId].join("");
-        const searchQuery = encodeURIComponent(`${manga.title} read official manga`);
+
+        // Search only across major official manga publishers when no direct readUrl is set
+        const officialSites = "(site:mangaplus.shueisha.co.jp OR site:viz.com OR site:kodansha.com OR site:kodansha.us OR site:yenpress.com OR site:manga-up.com OR site:bookwalker.jp)";
+        const searchQuery = encodeURIComponent(`${manga.title} ${officialSites}`);
         const fallbackSearch = "https://duckduckgo.com" + "/?q=" + searchQuery;
+
+        const hasOfficialLink = Boolean(manga.readUrl);
+        const targetUrl = hasOfficialLink ? manga.readUrl : fallbackSearch;
+        const linkLabel = hasOfficialLink ? "Read Official ↗" : "Search Official ↗";
+        const linkClass = hasOfficialLink ? "read-link" : "";
 
         const card = document.createElement("article");
         card.className = "manga-card";
@@ -80,9 +88,9 @@ async function initTracker() {
                         <button class="step-btn" onclick="updateProgress('${manga.id}', 1)" title="Next chapter">+1</button>
                     </div>
                 </div>
-                <div class="card-links">
+                                <div class="card-links">
                     <a href="${anilistUrl}" target="_blank" rel="noopener noreferrer">AniList</a>
-                    <a href="${manga.readUrl || fallbackSearch}" target="_blank" rel="noopener noreferrer" class="read-link">Read Official ↗</a>
+                    <a href="${targetUrl}" target="_blank" rel="noopener noreferrer" class="${linkClass}">${linkLabel}</a>
                 </div>
             </div>
         `;
@@ -90,6 +98,7 @@ async function initTracker() {
     });
 
     filterCards();
+
 
     // Fetch AniList data in batches of 50
     let mediaResults = [];
