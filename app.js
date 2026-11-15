@@ -184,8 +184,8 @@ async function checkMyAnimeList(mangaTitle, elementId, anilistBackup) {
 }
 
 // Combined live search + status/favorites filter + genre filter
-let currentFilter = "all";
-let currentGenre = "all";
+let currentFilter = sessionStorage.getItem("mangaActiveFilter") || "all";
+let currentGenre = sessionStorage.getItem("mangaActiveGenre") || "all";
 let currentSearch = "";
 
 function filterCards() {
@@ -230,17 +230,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const genreFilter = document.getElementById("genre-filter");
     if (genreFilter) {
+        // Restore saved genre selection on reload
+        genreFilter.value = currentGenre;
+
         genreFilter.addEventListener("change", (e) => {
             currentGenre = e.target.value;
+            sessionStorage.setItem("mangaActiveGenre", currentGenre);
             filterCards();
         });
     }
 
+    // Restore active filter button highlight on reload
     document.querySelectorAll(".filter-btn").forEach(button => {
+        button.classList.toggle("active", button.dataset.filter === currentFilter);
+
         button.addEventListener("click", function () {
             document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
             this.classList.add("active");
             currentFilter = this.dataset.filter;
+            sessionStorage.setItem("mangaActiveFilter", currentFilter);
             filterCards();
         });
     });
