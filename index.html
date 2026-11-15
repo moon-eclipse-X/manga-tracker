@@ -21,7 +21,7 @@
         <!-- Search bar to filter manga live -->
         <input type="search" id="search-input" placeholder="Search manga by title...">
         <!-- Filter buttons -->
-                   <div class="filter-buttons">
+        <div class="filter-buttons">
             <button class="filter-btn active" data-filter="all">All</button>
             <button class="filter-btn" data-filter="favorites">Favorites</button>
             <button class="filter-btn" data-filter="reading">Reading</button>
@@ -1049,7 +1049,7 @@
         // Load personal reading progress from browser storage
         let savedProgress = JSON.parse(localStorage.getItem("mangaProgress")) || {};
 
-             // Update chapter progress (+1 or -1) without needing an account
+        // Update chapter progress (+1 or -1) without needing an account
         function updateProgress(mangaId, change) {
             const current = savedProgress[mangaId] || 0;
             const next = Math.max(0, current + change);
@@ -1124,7 +1124,7 @@
                         <a href="${officialReadLink}" target="_blank" class="read-link">Read Official ↗</a>
                     </div>
                 `;
-                               container.appendChild(card);
+                container.appendChild(card);
             }
             // Update the counter immediately as soon as all 143 cards are created!
             filterCards();
@@ -1177,7 +1177,7 @@
                 // Show AniList info immediately so cards never stay on "Loading..."
                 document.getElementById(`${manga.id}-latest`).innerText = formatOfficialInfo(info);
 
-                           // Queue Jikan (MyAnimeList) every 400ms to stay safely under 3 requests/sec
+                // Queue Jikan (MyAnimeList) every 400ms to stay safely under 3 requests/sec
                 setTimeout(() => {
                     checkMyAnimeList(manga.title, `${manga.id}-latest`, info);
                 }, delay);
@@ -1224,7 +1224,7 @@
         }
 
 
-        // 5. Combined live search + status/favorites filter + genre filter
+                // 5. Combined live search + status/favorites filter + genre filter
         let currentFilter = "all";
         let currentGenre = "all";
         let currentSearch = "";
@@ -1235,12 +1235,12 @@
 
             cards.forEach(card => {
                 const id = card.getAttribute("data-id");
-                const title = card.getAttribute("data-title");
+                const title = card.getAttribute("data-title") || "";
                 const status = card.getAttribute("data-status") || "";
                 const genres = card.getAttribute("data-genres") || "";
 
                 const matchesSearch = title.includes(currentSearch);
-                               const matchesGenre = currentGenre === "all" || genres.includes(currentGenre);
+                const matchesGenre = currentGenre.toLowerCase() === "all" || genres.toLowerCase().includes(currentGenre.toLowerCase());
 
                 let matchesFilter = true;
                 if (currentFilter === "favorites") {
@@ -1252,7 +1252,8 @@
                 }
 
                 if (matchesSearch && matchesFilter && matchesGenre) {
-
+                    card.style.display = "flex";
+                    visibleCount++;
                 } else {
                     card.style.display = "none";
                 }
