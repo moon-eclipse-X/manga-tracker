@@ -1,3 +1,5 @@
+ // I worked really hard to get the API's working!
+ 
  const mangaList = [
             {
                 id: "wt",
@@ -163,18 +165,6 @@
                 mangadexId: "32d76d19-8a05-4db0-9fc2-e0b0648fe9d0"
             },
             {
-                id: "yu-yu-hakusho",
-                title: "Yu Yu Hakusho",
-                anilistId: 30053,
-                mangadexId: ""
-            },
-            {
-                id: "inuyasha",
-                title: "Inuyasha",
-                anilistId: 30676,
-                mangadexId: ""
-            },
-            {
                 id: "real-inoue",
                 title: "Real",
                 anilistId: 30657,
@@ -246,13 +236,6 @@
                 title: "Inuyasha",
                 anilistId: 30676,
                 mangadexId: ""
-            },
-            {
-                id: "real-inoue",
-                title: "Real",
-                anilistId: 30657,
-                mangadexId: "",
-                note: "Irregular releases by Takehiko Inoue (creator of Vagabond & Slam Dunk)."
             },
             {
                 id: "planetes",

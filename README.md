@@ -1,20 +1,15 @@
 # Manga Release Tracker
 
-A fast, lightweight web application to track the publication status, volume counts, and hiatus updates for 100+ popular manga and manhwa series in one clean dashboard.
-
-**Live Demo:** [manga-tracker-moon-eclipse-x.vercel.app](https://vercel.app)
+A simple web app to track my favorite manga, current reading progress, and latest chapter releases.
 
 ## Features
 
-- **Live Status & Publication Data:** Automatically fetches real-time status (`RELEASING`, `ON HIATUS`, `FINISHED`), genres, and publication dates via the **AniList GraphQL API** (in batches of 50).
-- **Volume & Chapter Counts:** Combines AniList data with the **Jikan (MyAnimeList) API** using a rate-limited queue and 24-hour `localStorage` caching.
-- **No-Account Favorites (⭐):** Click the star icon on any card to bookmark your personal reading list locally in your browser.
-- **Instant Search & Multi-Filtering:** Filter live by title, publication status, favorites, or 10 different genres with a real-time result counter.
-- **Custom Hiatus Notes:** Includes curated context notes for series known for irregular schedules or extended author breaks.
+- Filter by status (`Reading`, `Releasing`, `Hiatus Radar`, `Finished`), favorites, or genre
+- Track current chapter progress locally in the browser (`localStorage`)
+- Export and import reading progress as a JSON backup file
+- Links to AniList and official publishers
 
-## Tech Stack
+## Data Sources
 
-- **Frontend:** Semantic HTML5, CSS3, Vanilla JavaScript (ES6+)
-- **Styling:** [Pico.css](https://picocss.com) (Dark Mode) with custom responsive CSS Grid
-- **APIs:** AniList GraphQL API & Jikan REST API
-- **Hosting:** Deployed via GitHub & Vercel
+- [AniList GraphQL API](https://anilist.co) for series status, genres, and release dates
+- [Jikan API](https://jikan.moe) (MyAnimeList) for exact chapter and volume counts

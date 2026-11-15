@@ -1,14 +1,14 @@
-// Helper function to calculate days ago
+// Calculate days ago function (worked hard on this!)
 const daysAgo = (dateString) => {
     const days = Math.floor((new Date() - new Date(dateString)) / 86400000);
     return days === 0 ? "Today" : `${days} days ago`;
 };
 
-// Load saved favorites and reading progress from browser storage
+// Loading progress and favorites from local browser storage
 let savedFavorites = JSON.parse(localStorage.getItem("mangaFavorites")) || [];
 let savedProgress = JSON.parse(localStorage.getItem("mangaProgress")) || {};
 
-// Toggle favorite status when clicking the star button
+// Toggle favorite when clicked on (important don't delete again)
 function toggleFavorite(mangaId, btn) {
     const isFav = savedFavorites.includes(mangaId);
     savedFavorites = isFav ? savedFavorites.filter(id => id !== mangaId) : [...savedFavorites, mangaId];
@@ -18,7 +18,7 @@ function toggleFavorite(mangaId, btn) {
     filterCards();
 }
 
-// Helper to format AniList official publication info
+// Format helper
 function formatOfficialInfo({ chapters, status, startDate, endDate }) {
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const chText = chapters ? `${chapters} ch. • ` : "";
@@ -29,7 +29,7 @@ function formatOfficialInfo({ chapters, status, startDate, endDate }) {
     return `${chText}Official release`;
 }
 
-// Save chapter progress from button click or direct input
+// Save chapter progress function
 function setProgress(mangaId, value) {
     const num = Math.max(0, parseInt(value) || 0);
     savedProgress[mangaId] = num;
@@ -41,12 +41,12 @@ function setProgress(mangaId, value) {
 
 const updateProgress = (mangaId, change) => setProgress(mangaId, (savedProgress[mangaId] || 0) + change);
 
-// Build HTML cards and fetch AniList data in batches of 50
+// Build cards and group and send in batches of 50 (don't delete!)
 async function initTracker() {
     const container = document.getElementById("manga-container");
     if (!container || typeof mangaList === "undefined") return;
 
-    // Remove duplicates by anilistId and sort alphabetically (A-Z)
+    // Remove duplicate cards by id and sort in alfabetic order
     const uniqueMangaList = Array.from(new Map(mangaList.map(m => [m.anilistId, m])).values())
         .sort((a, b) => a.title.localeCompare(b.title));
 
@@ -54,7 +54,7 @@ async function initTracker() {
                              const isFav = savedFavorites.includes(manga.id);
         const anilistUrl = ["https://", "anilist.co/manga/", manga.anilistId].join("");
 
-        // Search only across major official manga publishers when no direct readUrl is set
+        // Filter to search only on official sites on duckduckgo
         const officialSites = "(site:mangaplus.shueisha.co.jp OR site:viz.com OR site:kodansha.com OR site:kodansha.us OR site:yenpress.com OR site:manga-up.com OR site:bookwalker.jp)";
         const searchQuery = encodeURIComponent(`${manga.title} ${officialSites}`);
         const fallbackSearch = "https://duckduckgo.com" + "/?q=" + searchQuery;
@@ -100,7 +100,7 @@ async function initTracker() {
     filterCards();
 
 
-    // Fetch AniList data in batches of 50
+    // Fetch Anilist data in batches of 50 (again very important)
     let mediaResults = [];
     const anilistEndpoint = ["https://", "graphql.", "anilist.co"].join("");
     const query = `query ($ids: [Int]) { Page(perPage: 50) { media(id_in: $ids, type: MANGA) { id status chapters genres startDate { year month } endDate { year month } } } }`;
@@ -122,7 +122,7 @@ async function initTracker() {
         }
     }
 
-    // Match each AniList result back to its card and queue Jikan safely
+    // Match AniList data with cards (play memory) and queu Jikan api
     let delay = 0;
     for (const manga of uniqueMangaList) {
         const info = mediaResults.find(item => item.id === manga.anilistId);
@@ -145,7 +145,7 @@ async function initTracker() {
     }
     filterCards();
 }
-// Fetch exact chapter & volume counts from Jikan (MyAnimeList API)
+// Fetch echapter and volume data from Jikan
 async function checkMyAnimeList(mangaTitle, elementId, anilistBackup) {
     const cacheKey = `mal_cache_${mangaTitle.toLowerCase()}`;
     const cached = JSON.parse(localStorage.getItem(cacheKey));
@@ -179,11 +179,11 @@ async function checkMyAnimeList(mangaTitle, elementId, anilistBackup) {
             }
         }
     } catch (error) {
-        // Keep the clean AniList info already shown on the card
+        // Keep clean info (important!)
     }
 }
 
-// Combined live search + status/favorites filter + genre filter
+// Combine filter, genre and search (I worked very hard on this)
 let currentFilter = sessionStorage.getItem("mangaActiveFilter") || "all";
 let currentGenre = sessionStorage.getItem("mangaActiveGenre") || "all";
 let currentSearch = "";
@@ -218,7 +218,7 @@ function filterCards() {
     if (countElement) countElement.innerText = `Showing ${visibleCount} of ${cards.length} manga`;
 }
 
-// Initialize all event listeners once the HTML document is fully loaded
+// Only start event when all HTML is loaded (will it work? edit/update: it worked!)
 document.addEventListener("DOMContentLoaded", () => {
     const searchInput = document.getElementById("search-input");
     if (searchInput) {
@@ -230,7 +230,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const genreFilter = document.getElementById("genre-filter");
     if (genreFilter) {
-        // Restore saved genre selection on reload
+        // Restore genre selection on reload (it was bugging me)
         genreFilter.value = currentGenre;
 
         genreFilter.addEventListener("change", (e) => {
@@ -240,7 +240,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Restore active filter button highlight on reload
+    // Restore filter button highlight on reload (f5)
     document.querySelectorAll(".filter-btn").forEach(button => {
         button.classList.toggle("active", button.dataset.filter === currentFilter);
 
@@ -253,7 +253,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Back-to-top button visibility and smooth scroll
+    // Back to top button smooth scrolling hassle that is not CSS
     const backToTopBtn = document.getElementById("back-to-top");
     if (backToTopBtn) {
         window.addEventListener("scroll", () => {
@@ -264,7 +264,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Export and import localStorage progress as a local JSON file
+    // Export and import localStorage progress as a local JSON file (hassle)
     const exportBtn = document.getElementById("export-btn");
     const importBtn = document.getElementById("import-btn");
     const importFile = document.getElementById("import-file");
@@ -310,6 +310,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Start the app
+    // Start the web-app! (hopefully)
+    // Just letting you know in the vercel.json file I worked really hard on the security and everything 
+    // I'm learning so you might find that a security.txt is to much but again I'm learning! And i don't want data leaks I don't like them
+
     initTracker();
 });

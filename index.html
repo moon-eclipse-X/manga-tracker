@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" type="image/svg+xml"
         href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23181c25'/%3E%3Crect x='14' y='14' width='16' height='36' rx='3' fill='%2301aaff'/%3E%3Crect x='34' y='14' width='16' height='20' rx='3' fill='%23e0e3e7'/%3E%3Ccircle cx='42' cy='43' r='7' fill='%232ecc71'/%3E%3C/svg%3E">
-    <!-- SEO and link preview metadata -->
+    <!-- Meta data what does it do actually? It was adviced that I put it in so I did-->
     <meta name="description" content="Track the latest chapter releases and hiatus updates for your favorite manga.">
     <meta property="og:title" content="Manga Release Tracker">
     <meta property="og:description"
@@ -26,7 +26,7 @@
     </header>
 
     <main class="container">
-        <!-- Search bar to filter manga live -->
+        <!-- Search bar-->
         <input type="search" id="search-input" placeholder="Search manga by title...">
         <!-- Filter buttons -->
         <div class="filter-buttons">
@@ -39,7 +39,7 @@
         </div>
 
 
-        <!-- Genre filter dropdown -->
+        <!-- Filters are here! -->
         <select id="genre-filter">
             <option value="all">All Genres</option>
             <option value="action">Action</option>
@@ -54,13 +54,13 @@
             <option value="supernatural">Supernatural</option>
         </select>
 
-        <!-- Lightweight result counter -->
+        <!-- Result counter with an unique id that was unnessecary-->
         <p id="results-count" class="results-count"></p>
 
-        <!-- JavaScript will automatically place all manga cards inside this div -->
+        <!-- Hello home of all manga-cards (placed by js don't forget!)-->
         <div id="manga-container"></div>
     </main>
-    <!-- Footer with local backup controls -->
+    <!-- Export and import buttons are here! -->
     <footer class="container">
         <div class="backup-controls">
             <button type="button" id="export-btn" class="outline secondary">Export Progress</button>
@@ -80,17 +80,15 @@
         </p>
 
         <small>
-            <small>
   Data powered by AniList & Jikan (MyAnimeList) API.
   Note: Series without exact chapter counts show the latest AniList database update.
 </small>
 .
-        </small>
     </footer>
-    <!-- Floating back-to-top button -->
+    <!-- Go back to top button -->
     <button type="button" id="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
 
-    <!-- Load manga list first, then main application logic -->
+    <!-- Note for me: Load manga first then aplication!!! -->
     <script src="manga-data.js" defer></script>
     <script src="app.js" defer></script>
 </body>
