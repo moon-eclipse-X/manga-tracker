@@ -1,4 +1,7 @@
 {
+  "rewrites": [
+    { "source": "/.well-known/security.txt", "destination": "/security.txt" }
+  ],
   "headers": [
     {
       "source": "/(.*)",
@@ -9,7 +12,7 @@
         { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; img-src 'self' https: data:; script-src 'self' https://*.vercel.live 'unsafe-inline'; style-src 'self' https://*.jsdelivr.net 'unsafe-inline'; connect-src 'self' https://*.anilist.co https://*.jikan.moe https://*.vercel.live; frame-src 'self' https://*.vercel.live;"
+          "value": "default-src 'self'; img-src 'self' https: data:; script-src 'self' https://*.vercel.live; style-src 'self' https://*.jsdelivr.net; connect-src 'self' https://*.anilist.co https://*.jikan.moe https://*.vercel.live; frame-src 'self' https://*.vercel.live;"
         }
       ]
     }
