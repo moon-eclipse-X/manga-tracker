@@ -1086,7 +1086,7 @@
 
             // Create all cards first
             for (const manga of uniqueMangaList) {
-                const card = document.createElement("article");
+                               const card = document.createElement("article");
                 card.className = "manga-card";
                 card.setAttribute("data-id", manga.id);
                 card.setAttribute("data-title", manga.title.toLowerCase());
@@ -1096,9 +1096,9 @@
                 const userCh = savedProgress[manga.id] || 0;
                 const noteHtml = manga.note ? `<p class="custom-note">${manga.note}</p>` : "";
                 const anilistLink = "https://" + "anilist.co/manga/" + manga.anilistId;
-                // Fallback to a smart Google search for official publishers if no specific readUrl is set
-                const googleBase = "https://" + "://google.com" + "/search?q=";
-                const fallbackSearch = googleBase + encodeURIComponent(manga.title + " read official manga");
+                // Fallback to a smart search for official publishers if no specific readUrl is set
+                const searchBase = "https://" + "duckduckgo.com" + "/?q=";
+                const fallbackSearch = searchBase + encodeURIComponent(manga.title + " read official manga");
                 const officialReadLink = manga.readUrl || fallbackSearch;
 
                 card.innerHTML = `
